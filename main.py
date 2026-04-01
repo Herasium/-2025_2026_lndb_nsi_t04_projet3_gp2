@@ -1,13 +1,12 @@
-import pyxel
+import threading
 
-pyxel.init(192, 108)
+from modules.client import Client
+from modules.client.MainMenu import MainMenu
+from modules.server import Server
 
-def update():
-    if pyxel.btnp(pyxel.KEY_Q):
-        pyxel.quit()
+server = Server()
+client = Client()
 
-def draw():
-    pyxel.cls(0)
-    pyxel.rect(10, 10, 1, 1, 11)
-
-pyxel.run(update, draw)
+threading.Thread(target=server.run).start()
+client.current_view = MainMenu()
+client.run()
