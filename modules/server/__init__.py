@@ -20,6 +20,9 @@ class Server():
 
         logger.debug(f"New connected client {id}")
 
+        while True:
+            pass
+
     async def serve(self):
         async with serve(self.receive, "localhost", 8765) as server:
             await server.serve_forever()

@@ -32,7 +32,7 @@ class Logger:
         timestamp: str = datetime.datetime.now().strftime("%Y-%m-%d | %H:%M:%S.%f")
 
         header: str = (
-            f"{self.colors[level]}LogicBox v.{data.VERSION} | {self.name} | {timestamp} | {self.levels[level]} | "
+            f"{self.colors[level]}Where Wolf? v.{data.VERSION} | {self.name} | {timestamp} | {self.levels[level]} | "
         )
 
         return header
