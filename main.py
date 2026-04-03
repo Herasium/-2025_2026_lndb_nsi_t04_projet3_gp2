@@ -12,5 +12,5 @@ server = Server()
 client = Client()
 
 threading.Thread(target=server.run).start()
-client.current_view = MainMenu()
+client.display(MainMenu())
 client.run()
