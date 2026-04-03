@@ -17,3 +17,4 @@ Compiler la doc:
    :caption: Contents:
 
    install
+   ideas
