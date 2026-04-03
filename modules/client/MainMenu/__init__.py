@@ -1,7 +1,7 @@
 
 from modules.client.toolbox.entity import Entity
 from modules.data import texture
-
+from modules.client.mouse import mouse
 
 import arcade
 
@@ -14,6 +14,11 @@ class MainMenu(arcade.View):
         self.bg = Entity(0,0,1920,1080,texture.get("main_background"))
         self.cube = Entity(0,0,100,100)
         self.x = 0
+
+    def on_mouse_motion(
+        self, x: float, y: float, delta_x: float, delta_y: float
+    ) -> None:
+        mouse.position = (x, y)
 
     def on_draw(self):
         self.clear()
