@@ -5,7 +5,7 @@ import pyxel
 class MainMenu(View):
 
     def __init__(self):
-        super.__init__()
+        super().__init__()
         self.name = "MainMenu"
         self.x = 0
 
