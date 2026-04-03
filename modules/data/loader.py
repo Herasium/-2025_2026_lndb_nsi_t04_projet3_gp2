@@ -1,4 +1,4 @@
-import pyxel
+import arcade
 
 from modules.data import data,texture
 
@@ -8,7 +8,7 @@ class Loader:
         pass
 
     def load_images(self):
-        img = pyxel.Image.load(0, 0, "assets/homescreen/homescreen_v1.png", include_colors=False)
-        texture.add("img","main_background")
+        texture.add("main_background",arcade.Sprite("assets/homescreen/homescreen_v1.png"))
 
     def load(self):
+        self.load_images()
