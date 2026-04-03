@@ -16,7 +16,6 @@ class Client:
         self.current_view.draw()
 
     def run(self):
-        print(1)
+
         threading.Thread(target=self.connection.run).start()
-        print(2)
         pyxel.run(self.update, self.draw)
