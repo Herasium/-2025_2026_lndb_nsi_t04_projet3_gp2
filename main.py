@@ -2,7 +2,7 @@ import threading
 
 from modules.client import Client
 from modules.client.MainMenu import MainMenu
-from modules.client.GameMenu import GameMenu
+
 from modules.server import Server
 from modules.data.loader import Loader
 
