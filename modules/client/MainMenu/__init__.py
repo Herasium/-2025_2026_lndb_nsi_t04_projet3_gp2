@@ -1,4 +1,5 @@
 from modules.client import View
+from modules.data import texture
 
 import pyxel
 
@@ -11,6 +12,7 @@ class MainMenu(View):
 
     def draw(self):
         pyxel.cls(0)
+        pyxel.blt(0,0,texture.get("main_background"),0,0,192,108)
         pyxel.rect(self.x, 0, 8, 8, 9)
 
     def update(self):

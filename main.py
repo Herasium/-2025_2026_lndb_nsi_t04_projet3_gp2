@@ -3,6 +3,10 @@ import threading
 from modules.client import Client
 from modules.client.MainMenu import MainMenu
 from modules.server import Server
+from modules.data.loader import Loader
+
+loader = Loader()
+loader.load()
 
 server = Server()
 client = Client()
