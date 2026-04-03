@@ -7,7 +7,7 @@ class Client:
     def __init__(self):
         self.current_view = None
         self.connection = Connection()
-        pyxel.init(160, 120)
+        pyxel.init(192, 108)
 
     def update(self):
         self.current_view.update()
