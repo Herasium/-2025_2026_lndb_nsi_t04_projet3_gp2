@@ -6,12 +6,26 @@ from modules.client.MainMenu import MainMenu
 from modules.server import Server
 from modules.data.loader import Loader
 
-loader = Loader()
-loader.load()
+import multiprocessing
 
-server = Server()
-client = Client()
+from line_profiler import profile
 
-threading.Thread(target=server.run).start()
-client.display(MainMenu())
-client.run()
+@profile
+def main():
+    loader = Loader()
+    loader.load()
+
+    server = Server()
+    client = Client()
+
+    server_process = multiprocessing.Process(
+            target=server.run, 
+            daemon=True
+    )
+
+    server_process.start()
+    client.display(MainMenu())
+    client.run()
+
+if __name__ == '__main__':
+    main()
