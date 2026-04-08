@@ -2,7 +2,7 @@
 from modules.client.toolbox.entity import Entity
 from modules.data import texture
 from modules.client.mouse import mouse
-
+from line_profiler import profile
 import arcade
 
 class MainMenu(arcade.View):
@@ -15,6 +15,7 @@ class MainMenu(arcade.View):
         self.button_join = Entity(100,200,400,100,texture.get("join_default"))
         self.x = 0
 
+    @profile
     def on_mouse_motion(
         self, x: float, y: float, delta_x: float, delta_y: float
     ) -> None:
@@ -24,17 +25,19 @@ class MainMenu(arcade.View):
         else:
             self.button_join.sprite = texture.get("join_default")
 
+    @profile
     def on_mouse_press(self,x,y,buttons,modifier):
         if self.button_join.touched :
             self.button_join.sprite = texture.get("join_click")
         else:
             self.button_join.sprite = texture.get("join_default")
 
+    @profile
     def on_draw(self):
         self.clear()
-        self.bg.draw()
+        #self.bg.draw()
         self.button_join.draw()
 
-
+    @profile
     def on_update(self,delta_time):
         self.x = (self.x + 1) % 150
