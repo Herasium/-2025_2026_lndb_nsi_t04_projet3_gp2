@@ -60,6 +60,7 @@ class MainMenu(arcade.View):
 
         if self.button_quit.touched :
             self.button_quit.sprite = texture.get("create_default")
+            arcade.quit
 
     def on_draw(self):
         self.clear()
