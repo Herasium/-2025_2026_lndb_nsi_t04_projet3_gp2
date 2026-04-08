@@ -30,8 +30,6 @@ class _Mouse:
         self._position = value
         self._x = self._position[0]
         self._y = self._position[1]
-        self._calculate_cursor()
-        self._calculate_direction()
         return self._position
 
     @property

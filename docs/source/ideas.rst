@@ -12,7 +12,7 @@ Voyante
 Elle voit la carte de qlq
 
 Sorcière
-~~~~~~~~~
+~~~~~~~~
 A une potion de vie et de mort
 Peut utiliser les 2 en une nuit
 Variente(peut etre op, x2 potions)
@@ -21,8 +21,8 @@ Cupidon
 ~~~~~~~
 Met en couple deux personnes
 
-Loup Blanc
-~~~~~~~~~~~
+Loup Gourmand
+~~~~~~~~~~~~~
 Peut tuer qlq en plus 1/2 nuit
 gagne seul
 
@@ -67,3 +67,7 @@ Peut soit recouvrir d'essence des personnes ou les bruler
 Soufleur de lune
 ~~~~~~~~~~~~~~~~
 Peut arreter la nuit
+
+Pétomane
+~~~~~~~~
+Peut faire une flatulence devant une maison (la personne peut pas voter)
