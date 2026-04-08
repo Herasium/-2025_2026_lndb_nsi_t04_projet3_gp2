@@ -67,3 +67,7 @@ Peut soit recouvrir d'essence des personnes ou les bruler
 Soufleur de lune
 ~~~~~~~~~~~~~~~~
 Peut arreter la nuit
+
+Pétomane
+~~~~~~~~
+Peut faire une flatulence devant une maison (la personne peut pas voter)
