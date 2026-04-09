@@ -7,7 +7,7 @@ from modules.server import Server
 from modules.data.loader import Loader
 
 import multiprocessing
-
+from modules.data import data
 from line_profiler import profile
 
 @profile
@@ -17,6 +17,8 @@ def main():
 
     server = Server()
     client = Client()
+
+    data.client = client
 
     server_process = multiprocessing.Process(
             target=server.run, 
