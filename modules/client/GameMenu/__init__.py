@@ -12,6 +12,7 @@ class GameMenu(arcade.View):
         self.name = "GameMenu"
         self.bg = Entity(0,0,1920,1080,texture.get("main_background"))
         self.x = 0
+        self.data = [{"nom":"Serveur 1","nombre":10,"max":15,"status":"En Cours."},{"nom":"Serveur 2","nombre":1,"max":100,"status":"En Attente."},{"nom":"Serveur 3","nombre":0,"max":2,"status":"Hors Ligne."}]
 
     @profile
     def on_mouse_motion(
