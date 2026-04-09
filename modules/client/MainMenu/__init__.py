@@ -1,9 +1,11 @@
 
 from modules.client.toolbox.entity import Entity
-from modules.data import texture
+from modules.data import texture, data
 from modules.client.mouse import mouse
 from line_profiler import profile
 import arcade
+from modules.client.GameMenu.__init__ import GameMenu
+
 
 class MainMenu(arcade.View):
 
@@ -54,6 +56,7 @@ class MainMenu(arcade.View):
     def on_mouse_release(self,x,y,buttons,modifier):
         if self.button_join.touched :
             self.button_join.sprite = texture.get("join_default")
+            data.client.display(GameMenu())
 
         if self.button_setting.touched :
             self.button_setting.sprite = texture.get("create_default")
@@ -61,6 +64,9 @@ class MainMenu(arcade.View):
         if self.button_quit.touched :
             self.button_quit.sprite = texture.get("create_default")
             arcade.exit()
+
+
+
 
     def on_draw(self):
         self.clear()

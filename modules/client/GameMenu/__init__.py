@@ -13,6 +13,7 @@ class GameMenu(arcade.View):
         self.bg = Entity(0,0,1920,1080,texture.get("main_background"))
         self.x = 0
         self.data = [{"nom":"Serveur 1","nombre":10,"max":15,"status":"En Cours."},{"nom":"Serveur 2","nombre":1,"max":100,"status":"En Attente."},{"nom":"Serveur 3","nombre":0,"max":2,"status":"Hors Ligne."}]
+        self.button_quit = Entity(1820, 1000, 64, 64,texture.get("create_default"))
 
     @profile
     def on_mouse_motion(
@@ -20,8 +21,6 @@ class GameMenu(arcade.View):
     ) -> None:
         mouse.position = (x, y)
 
-
-    
     @profile
     def on_mouse_press(self,x,y,buttons,modifier):
         pass
@@ -35,6 +34,8 @@ class GameMenu(arcade.View):
     def on_draw(self):
         self.clear()
         self.bg.draw()
+        self.button_quit.draw()
+        arcade.draw_lbwh_rectangle_outline(100,200,500,300, arcade.color.RED)
 
     @profile
     def on_update(self,delta_time):
