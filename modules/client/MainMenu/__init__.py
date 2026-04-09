@@ -13,7 +13,7 @@ class MainMenu(arcade.View):
         self.name = "MainMenu"
         self.bg = Entity(0,0,1920,1080,texture.get("main_background"))
         self.button_join = Entity(100,200,400,100,texture.get("join_default"))
-        self.button_setting = Entity(1750,1000,32,32,texture.get("create_default"))
+        self.button_setting = Entity(1750,1000,64,64,texture.get("create_default"))
         self.button_quit = Entity(1820, 1000, 64, 64,texture.get("create_default"))
         self.x = 0
 
@@ -60,7 +60,7 @@ class MainMenu(arcade.View):
 
         if self.button_quit.touched :
             self.button_quit.sprite = texture.get("create_default")
-            arcade.quit
+            arcade.exit()
 
     def on_draw(self):
         self.clear()
