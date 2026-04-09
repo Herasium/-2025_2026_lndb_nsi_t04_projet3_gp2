@@ -13,7 +13,7 @@ class GameMenu(arcade.View):
         self.bg = Entity(0,0,1920,1080,texture.get("main_background"))
         self.x = 0
         self.data = [{"nom":"Serveur 1","nombre":10,"max":15,"status":"En Cours."},{"nom":"Serveur 2","nombre":1,"max":100,"status":"En Attente."},{"nom":"Serveur 3","nombre":0,"max":2,"status":"Hors Ligne."}]
-        self.button_quit = Entity(1820, 1000, 64, 64,texture.get("create_default"))
+        self.button_quit = Entity(1820, 990, 64, 64,texture.get("quit_default"))
 
     @profile
     def on_mouse_motion(
@@ -23,12 +23,13 @@ class GameMenu(arcade.View):
 
     @profile
     def on_mouse_press(self,x,y,buttons,modifier):
-        pass
+        if self.button_quit.touched :
+            self.button_quit.sprite = texture.get("quit_click")
 
     @profile
     def on_mouse_release(self,x,y,buttons,modifier):
         if self.button_quit.touched :
-            self.button_quit.sprite = texture.get("create_default")
+            self.button_quit.sprite = texture.get("quit_default")
             arcade.exit()
 
     def on_draw(self):
