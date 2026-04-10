@@ -30,7 +30,7 @@ Loup noir
 ~~~~~~~~~
 Peut transformer une personne pour la game
 
-Patrick
+Crazy Dave
 ~~~~~~~
 tuer le nombre de personne mort la nuit d'avant
 Apparition rare
@@ -68,6 +68,6 @@ Soufleur de lune
 ~~~~~~~~~~~~~~~~
 Peut arreter la nuit (1/3 nuit)
 
-Pétomane
+Empoisonneur
 ~~~~~~~~
 Peut faire une flatulence devant une maison (la personne peut pas voter)
