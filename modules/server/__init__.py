@@ -28,7 +28,7 @@ class Server():
             del self.clients[id]
 
     async def serve(self):
-        async with serve(self.receive, "localhost", 8765) as server:
+        async with serve(self.receive, "0.0.0.0", 8765) as server:
             await server.serve_forever()
 
     def run(self):
