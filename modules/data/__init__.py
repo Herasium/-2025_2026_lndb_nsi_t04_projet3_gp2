@@ -21,6 +21,7 @@ class Data:
         self.VERSION = 0
         self.MOUSE_SENSI = 40
         self.UI_EDITOR_GRID_SIZE: int = 27
+        self.MAX_SCROLL: int = 1080
 
     # def save(self) -> None:
     #     preferences = {
