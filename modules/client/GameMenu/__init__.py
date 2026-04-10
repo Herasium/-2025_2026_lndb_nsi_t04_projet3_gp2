@@ -20,7 +20,7 @@ class GameMenu(arcade.View):
         self.setup_texts()
 
         self.bg = Entity(0,0,1920,1080,texture.get("main_background"))
-        self.cadre = Entity(500,500,256*2,128*2,texture.get("server_bg"))
+        self.cadre = Entity(320,220,256*5,128*5,texture.get("server_bg"))
         self.x = 0
 
         self.button_quit = Entity(1820, 990, 64, 64,texture.get("quit_default"))
@@ -32,32 +32,33 @@ class GameMenu(arcade.View):
             {"nom":"Serveur 1","nombre":10,"max":15,"status":"En Cours."},
             {"nom":"Serveur 2","nombre":1,"max":100,"status":"En Attente."},
             {"nom":"Serveur 3","nombre":0,"max":2,"status":"Hors Ligne."},
+            {"nom":"Serveur 4","nombre":2,"max":19,"status":"Hors Ligne."}
         ]
 
         self.server: List[Text] = []
         self.case_server: List[Entity] = []
 
-        a = 560
+        a = (256*3.5) + 10
         for i in self.data :
-            a = a - 45
+            a = a - 36*5
             self.server.append(
                 Text(
-                    x=160,
+                    x=640,
                     y=a + self.camera,
                     text=f"Nouveau {i["nom"]} pour {i["nombre"]} personnes",
                     align=("left", "center"),
-                    size=16,
+                    size=25,
                 )
             )
-
+        b = (256*3)+42
         for i in self.data:
-            a = a - 45
+            b = b - 36*5
             self.case_server.append(
                 Entity(
-                    x=160,
-                    y=a + self.camera,
-                    width=256,
-                    height=36,
+                    x=320,
+                    y=b + self.camera,
+                    width=256*5,
+                    height=36*5,
                     sprite=texture.get("server_case"),
                 )
             )
@@ -85,12 +86,12 @@ class GameMenu(arcade.View):
         self.cadre.draw()
         self.button_quit.draw()
         # arcade.draw_lbwh_rectangle_outline(100,200,500,300, arcade.color.RED)
+        for n in self.case_server:
+            n.draw()
 
         for i in self.server:
             i.draw()
         
-        for n in self.case_server:
-            n.draw()
 
     @profile
     def on_update(self,delta_time):

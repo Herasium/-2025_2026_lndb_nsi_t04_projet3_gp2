@@ -21,3 +21,7 @@ class Loader:
 
     def load(self):
         self.load_images()
+
+
+def load_font(self):
+    arcade.load_font("oezdk")
