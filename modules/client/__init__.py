@@ -19,7 +19,7 @@ class Client:
         self.rx_queue = multiprocessing.Queue()
         self.tx_queue = multiprocessing.Queue()
         
-        self.conn_obj = Connection("ws://localhost:8765", self.rx_queue, self.tx_queue)
+        self.conn_obj = Connection("ws://192.168.2.177:8765", self.rx_queue, self.tx_queue)
         self.network_process = multiprocessing.Process(
             target=self.conn_obj.start, 
             daemon=True
@@ -33,3 +33,5 @@ class Client:
     def run(self):
         self.network_process.start()
         arcade.run()
+
+        
