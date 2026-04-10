@@ -21,7 +21,8 @@ class Loader:
 
     def load(self):
         self.load_images()
+        self.load_font()
 
 
-def load_font(self):
-    arcade.load_font("assets/fonts/press_start.png")
+    def load_font(self):
+        arcade.load_font("assets/fonts/press_start.ttf")

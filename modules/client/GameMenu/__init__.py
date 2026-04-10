@@ -38,16 +38,16 @@ class GameMenu(arcade.View):
         self.server: List[Text] = []
         self.case_server: List[Entity] = []
 
-        a = (256*3.5) + 10
+        a = (256*3.5) +5
         for i in self.data :
             a = a - 36*5
             self.server.append(
                 Text(
-                    x=640,
+                    x=560,
                     y=a + self.camera,
                     text=f"Nouveau {i["nom"]} pour {i["nombre"]} personnes",
                     align=("left", "center"),
-                    size=25,
+                    size=18,
                 )
             )
         b = (256*3)+42
