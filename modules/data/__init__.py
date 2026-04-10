@@ -19,6 +19,13 @@ class Data:
     def __init__(self):
         self.LOGGER_MIN = 0
         self.VERSION = 0
+        self.MOUSE_SENSI = 40
+        self.UI_EDITOR_GRID_SIZE: int = 27
+
+    # def save(self) -> None:
+    #     preferences = {
+    #         "mouse_sensitivity": self.MOUSE_SENSI,
+    #     }
 
 data = Data()
 texture = Texture()

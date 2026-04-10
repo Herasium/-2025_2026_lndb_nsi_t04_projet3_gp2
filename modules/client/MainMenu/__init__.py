@@ -1,9 +1,11 @@
 
 from modules.client.toolbox.entity import Entity
-from modules.data import texture
+from modules.data import texture, data
 from modules.client.mouse import mouse
 from line_profiler import profile
 import arcade
+from modules.client.GameMenu.__init__ import GameMenu
+
 
 class MainMenu(arcade.View):
 
@@ -13,7 +15,8 @@ class MainMenu(arcade.View):
         self.name = "MainMenu"
         self.bg = Entity(0,0,1920,1080,texture.get("main_background"))
         self.button_join = Entity(100,200,400,100,texture.get("join_default"))
-        self.button_create = Entity(100,80,400,100,texture.get("create_default"))
+        self.button_setting = Entity(1730,990,64,64,texture.get("settings_default"))
+        self.button_quit = Entity(1820, 990, 64, 64,texture.get("quit_default"))
         self.x = 0
 
     @profile
@@ -27,6 +30,7 @@ class MainMenu(arcade.View):
             self.button_join.sprite = texture.get("join_default")
 
 
+<<<<<<< HEAD
         if self.button_create.touched:
             self.button_create.sprite = texture.get("create_hover")
         else:
@@ -34,24 +38,48 @@ class MainMenu(arcade.View):
 
         
 
+=======
+    
+    @profile
+>>>>>>> 6737dafa641a80ed08716b79954b8a788630bee5
     def on_mouse_press(self,x,y,buttons,modifier):
         if self.button_join.touched :
             self.button_join.sprite = texture.get("join_click")
-        if self.button_create.touched :
-            self.button_create.sprite = texture.get("create_click")
 
+        if self.button_setting.touched :
+            self.button_setting.sprite = texture.get("settings_click")
+
+        if self.button_quit.touched :
+            self.button_quit.sprite = texture.get("quit_click")
+
+
+    @profile
     def on_mouse_release(self,x,y,buttons,modifier):
         if self.button_join.touched :
             self.button_join.sprite = texture.get("join_default")
+            data.client.display(GameMenu())
 
+        if self.button_setting.touched :
+            self.button_setting.sprite = texture.get("settings_default")
+
+        if self.button_quit.touched :
+            self.button_quit.sprite = texture.get("quit_default")
+            arcade.exit()
+
+
+
+<<<<<<< HEAD
         if self.button_create.touched :
             self.button_create.sprite = texture.get("create_default")
+=======
+>>>>>>> 6737dafa641a80ed08716b79954b8a788630bee5
 
     def on_draw(self):
         self.clear()
         self.bg.draw()
         self.button_join.draw()
-        self.button_create.draw()
+        self.button_setting.draw()
+        self.button_quit.draw()
 
     @profile
     def on_update(self,delta_time):
