@@ -100,6 +100,8 @@ class GameMenu(arcade.View):
         self, x: float, y: float, scroll_x: float, scroll_y: float
     ) -> None:
         """Met à jour le décalage vertical de la caméra et reconstruit la mise en page."""
+        data.self.MAX_SCROLL = 256 * 2
         self.camera += scroll_y * -data.MOUSE_SENSI
         self.camera = max(self.camera, 0)
+        self.camera = min(self.camera, data.self.MAX_SCROLL)
         self.setup_texts()
