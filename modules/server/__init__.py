@@ -12,16 +12,20 @@ class Server():
     def __init__(self):
         self.clients = {}
 
-    async def receive(self,websocket):
+    async def receive(self, websocket):
         id = random_id()
-        new_client = Client(websocket,id)
-
+        new_client = Client(websocket, id)
         self.clients[id] = new_client
-
         logger.debug(f"New connected client {id}")
 
-        while True:
-            pass
+        try:
+            async for message in websocket:
+                await self.handle_message(message) 
+        except Exception as e:
+            logger.error(f"Error: {e}")
+        finally:
+            logger.debug(f"Disconnected client {id}")
+            del self.clients[id]
 
     async def serve(self):
         async with serve(self.receive, "localhost", 8765) as server:

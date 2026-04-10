@@ -15,7 +15,6 @@ def main():
     loader = Loader()
     loader.load()
 
-    server = Server()
     client = Client()
 
     data.client = client
