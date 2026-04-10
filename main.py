@@ -19,12 +19,6 @@ def main():
 
     data.client = client
 
-    server_process = multiprocessing.Process(
-            target=server.run, 
-            daemon=True
-    )
-
-    server_process.start()
     client.display(MainMenu())
     client.run()
 

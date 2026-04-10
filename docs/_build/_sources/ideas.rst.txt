@@ -66,7 +66,7 @@ Peut soit recouvrir d'essence des personnes ou les bruler
 
 Soufleur de lune
 ~~~~~~~~~~~~~~~~
-Peut arreter la nuit
+Peut arreter la nuit (1/3 nuit)
 
 Pétomane
 ~~~~~~~~
