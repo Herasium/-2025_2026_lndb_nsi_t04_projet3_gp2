@@ -19,10 +19,6 @@ def main():
 
     data.client = client
 
-<<<<<<< HEAD
-=======
-
->>>>>>> f6217d80dcddb9007eeabed4716e80dd6bdccebb
     client.display(MainMenu())
     client.run()
 

@@ -86,23 +86,11 @@ class GameMenu(arcade.View):
         self.cadre.draw()
         self.button_quit.draw()
 
-        ZONE_X_MIN, ZONE_X_MAX = 300, 300 + (256 * 5)
-        ZONE_Y_MIN, ZONE_Y_MAX = 220, 220 + (128 * 5)
+        for n in self.case_server:
+            n.draw()
 
-        for case in self.case_server:
-            if ZONE_X_MIN <= case.x <= ZONE_X_MAX and ZONE_Y_MIN <= case.y <= ZONE_Y_MAX:
-                case.draw()
-
-        for text in self.server:
-            if ZONE_X_MIN <= text.x <= ZONE_X_MAX and ZONE_Y_MIN <= text.y <= ZONE_Y_MAX:
-                text.draw()
-
-
-        # for n in self.case_server:
-        #     n.draw()
-
-        # for i in self.server:
-        #     i.draw()
+        for i in self.server:
+            i.draw()
         
     @profile
     def on_update(self,delta_time):
@@ -112,13 +100,9 @@ class GameMenu(arcade.View):
         self, x: float, y: float, scroll_x: float, scroll_y: float
     ) -> None:
         """Met à jour le décalage vertical de la caméra et reconstruit la mise en page."""
-        ZONE_X_MIN, ZONE_X_MAX = 320, 320 + (256 * 5)
-        ZONE_Y_MIN, ZONE_Y_MAX = 220, 220 + (128 * 5)
         
-        if ZONE_X_MIN <= x <= ZONE_X_MAX and ZONE_Y_MIN <= y <= ZONE_Y_MAX:
-            self.camera += scroll_y * -data.MOUSE_SENSI
-            self.camera = max(self.camera, 0)
-            self.camera = min(self.camera, data.MAX_SCROLL)
-            self.setup_texts()
-        else:
-            pass
+        self.camera += scroll_y * -data.MOUSE_SENSI
+        self.camera = max(self.camera, 0)
+        self.camera = min(self.camera, data.MAX_SCROLL)
+        self.setup_texts()
+

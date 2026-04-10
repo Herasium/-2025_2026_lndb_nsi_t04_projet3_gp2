@@ -30,13 +30,8 @@ class MainMenu(arcade.View):
             self.button_join.sprite = texture.get("join_default")
 
 
-<<<<<<< HEAD
     
     @profile
-=======
-        
-
->>>>>>> f6217d80dcddb9007eeabed4716e80dd6bdccebb
     def on_mouse_press(self,x,y,buttons,modifier):
         if self.button_join.touched :
             self.button_join.sprite = texture.get("join_click")
@@ -62,11 +57,6 @@ class MainMenu(arcade.View):
             arcade.exit()
 
 
-<<<<<<< HEAD
-
-
-=======
->>>>>>> f6217d80dcddb9007eeabed4716e80dd6bdccebb
     def on_draw(self):
         self.clear()
         self.bg.draw()
