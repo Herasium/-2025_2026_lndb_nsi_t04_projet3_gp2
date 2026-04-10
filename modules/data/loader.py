@@ -24,4 +24,4 @@ class Loader:
 
 
 def load_font(self):
-    arcade.load_font("oezdk")
+    arcade.load_font("assets/fonts/press_start.png")
