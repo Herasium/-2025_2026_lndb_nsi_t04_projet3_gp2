@@ -26,9 +26,6 @@ class MainMenu(arcade.View):
         else:
             self.button_join.sprite = texture.get("join_default")
 
-<<<<<<< HEAD
-    @profile
-=======
 
         if self.button_create.touched:
             self.button_create.sprite = texture.get("create_hover")
@@ -37,7 +34,6 @@ class MainMenu(arcade.View):
 
         
 
->>>>>>> 8286537e6cff0be5416583368983b13a0b2f64c0
     def on_mouse_press(self,x,y,buttons,modifier):
         if self.button_join.touched :
             self.button_join.sprite = texture.get("join_click")
@@ -48,16 +44,12 @@ class MainMenu(arcade.View):
         if self.button_join.touched :
             self.button_join.sprite = texture.get("join_default")
 
-<<<<<<< HEAD
-    @profile
-=======
         if self.button_create.touched :
             self.button_create.sprite = texture.get("create_default")
 
->>>>>>> 8286537e6cff0be5416583368983b13a0b2f64c0
     def on_draw(self):
         self.clear()
-        #self.bg.draw()
+        self.bg.draw()
         self.button_join.draw()
         self.button_create.draw()
 
