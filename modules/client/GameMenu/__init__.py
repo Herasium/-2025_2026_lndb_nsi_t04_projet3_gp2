@@ -45,7 +45,7 @@ class GameMenu(arcade.View):
                 Text(
                     x=560,
                     y=a + self.camera,
-                    text=f"Nouveau {i["nom"]} pour {i["nombre"]} personnes",
+                    text=f'Nouveau {i["nom"]} pour {i["nombre"]} personnes',
                     align=("left", "center"),
                     size=18,
                 )

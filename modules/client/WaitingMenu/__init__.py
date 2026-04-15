@@ -30,27 +30,29 @@ class WaitingMenu(arcade.View):
         ]
         
         self.nb_perso = 0
+        self.nb_perso_enligne: List[str] = []
         self.perso: List[str] = []
 
         for n in self.data:
             if n["statue"] == "en ligne":
                 self.nb_perso += 1
+                self.nb_perso_enligne.append(n["nom"])
 
-        a = 0
-        for i in self.data:
-            if i["statue"] == "en ligne":
-                a = 2*(math.pi) // self.nb_perso
-                self.perso.append(
-                    Text(
-                        x=260*(math.cos(a))+960,
-                        y=260*(math.sin(a))+540,
-                        text=f"{i["nom"]}",
-                        align=("right", "top"),
-                        size=12,
-                    )
+        a = 2*(math.pi) // self.nb_perso
+        for i in self.nb_perso_enligne:
+            a += a
+            print(a)
+            self.perso.append(
+                Text(
+                    x=260*(math.cos(a))+960,
+                    y=260*(math.sin(a))+540,
+                    text=f"{i}",
+                    align=("right", "top"),
+                    size=12,
                 )
+            )
         
-        print (self.nb_perso, self.perso)
+        # print (self.nb_perso, self.perso)
 
 
 
