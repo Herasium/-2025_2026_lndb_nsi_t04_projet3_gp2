@@ -2,6 +2,7 @@ import threading
 
 from modules.client import Client
 from modules.client.MainMenu import MainMenu
+from modules.client.WaitingMenu import WaitingMenu
 
 from modules.server import Server
 from modules.data.loader import Loader
@@ -19,7 +20,7 @@ def main():
 
     data.client = client
 
-    client.display(MainMenu())
+    client.display(WaitingMenu())
     client.run()
 
 if __name__ == '__main__':
