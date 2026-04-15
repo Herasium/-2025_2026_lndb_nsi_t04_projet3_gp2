@@ -59,7 +59,7 @@ class GameMenu(arcade.View):
                     y=b + self.camera,
                     width=256*5,
                     height=36*5,
-                    sprite=texture.get("server_case"),
+                    sprite=texture.get("server_case_default"),
                 )
             )
 
@@ -68,17 +68,28 @@ class GameMenu(arcade.View):
         self, x: float, y: float, delta_x: float, delta_y: float
     ) -> None:
         mouse.position = (x, y)
+        for i in self.case_server :
+            if i.touched:
+                i.sprite = texture.get("server_case_hover")
+            else:
+                i.sprite = texture.get("server_case_default")
 
     @profile
     def on_mouse_press(self,x,y,buttons,modifier):
         if self.button_quit.touched :
             self.button_quit.sprite = texture.get("quit_click")
 
+
     @profile
     def on_mouse_release(self,x,y,buttons,modifier):
         if self.button_quit.touched :
             self.button_quit.sprite = texture.get("quit_default")
             arcade.exit()
+        for i in self.case_server :
+            if i.touched:
+                i.sprite = texture.get("server_case_default")
+
+
 
     def on_draw(self):
         self.clear()
