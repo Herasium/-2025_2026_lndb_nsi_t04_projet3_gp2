@@ -1,8 +1,10 @@
 from modules.client.toolbox.entity import Entity
+from modules.client.toolbox.text import Text
 from typing import List
 from modules.data import texture, data
 from modules.client.mouse import mouse
 from line_profiler import profile
+import math
 import arcade
 
 
@@ -19,25 +21,45 @@ class WaitingMenu(arcade.View):
 
         # self.table_ronde = arcade.draw_circle_filled(960, 540, 60, [109, 155, 195, 255])
 
-        # self.data: List[str] = [
-        #     {"nom": "Marine"},
-        #     {"nom": "Eudocie"},
-        #     {"nom": "Louise"},
-        #     {"nom": "Elisa"},
-        #     {"nom": "Jeanne"},
-        # ]
+        self.data: List[str] = [
+            {"nom": "Marine", "statue": "en ligne"},
+            {"nom": "Eudocie", "statue": "en ligne"},
+            {"nom": "Louise", "statue": "deco"},
+            {"nom": "Elisa", "statue": "deco"},
+            {"nom": "Jeanne", "statue": "deco"},
+        ]
         
         self.nb_perso = 0
+        self.perso: List[str] = []
+
+        for n in self.data:
+            if n["statue"] == "en ligne":
+                self.nb_perso += 1
+
+        a = 0
+        for i in self.data:
+            if i["statue"] == "en ligne":
+                a = 2*(math.pi) // self.nb_perso
+                self.perso.append(
+                    Text(
+                        x=260*(math.cos(a))+960,
+                        y=260*(math.sin(a))+540,
+                        text=f"{i["nom"]}",
+                        align=("right", "top"),
+                        size=12,
+                    )
+                )
+        
+        print (self.nb_perso, self.perso)
+
+
 
     @profile
     def on_mouse_motion(
         self, x: float, y: float, delta_x: float, delta_y: float
     ) -> None:
         mouse.position = (x, y)
-        if self.button_join.touched:
-            self.button_join.sprite = texture.get("join_hover")
-        else:
-            self.button_join.sprite = texture.get("join_default")
+        pass
 
     @profile
     def on_mouse_press(self,x,y,buttons,modifier):
@@ -55,6 +77,9 @@ class WaitingMenu(arcade.View):
         # self.bg.draw()
         self.button_quit.draw()
         arcade.draw_circle_filled(960, 540, 260, [109, 155, 195, 255])
+
+        for p in self.perso:
+            p.draw()
 
     @profile
     def on_update(self,delta_time):
