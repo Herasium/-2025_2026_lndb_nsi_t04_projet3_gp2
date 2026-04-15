@@ -1,5 +1,5 @@
-
 from modules.client.toolbox.entity import Entity
+from typing import List
 from modules.data import texture, data
 from modules.client.mouse import mouse
 from line_profiler import profile
@@ -16,6 +16,14 @@ class WaitingMenu(arcade.View):
         self.bg = Entity(0,0,1920,1080,texture.get("main_background"))
         self.button_quit = Entity(1820, 990, 64, 64,texture.get("quit_default"))
         self.x = 0
+
+        self.data: List[str] = [
+            {"nom": "Marine"},
+            {"nom": "Eudocie"},
+            {"nom": "Louise"},
+            {"nom": "Elisa"},
+            {"nom": "Jeanne"},
+        ]
 
     @profile
     def on_mouse_motion(
