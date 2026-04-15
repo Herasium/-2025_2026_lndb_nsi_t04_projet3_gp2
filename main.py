@@ -20,7 +20,7 @@ def main():
 
     data.client = client
 
-    client.display(WaitingMenu())
+    client.display(MainMenu())
     client.run()
 
 if __name__ == '__main__':
