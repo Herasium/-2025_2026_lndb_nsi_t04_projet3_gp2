@@ -72,6 +72,3 @@ Empoisonneur
 ~~~~~~~~
 Peut faire une flatulence devant une maison (la personne peut pas voter)
 
-Petite fille
-~~~~~~~~~~~~
-Peut espionner les loups pendant la nuit
