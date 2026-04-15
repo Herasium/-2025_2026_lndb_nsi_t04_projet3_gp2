@@ -39,15 +39,17 @@ class WaitingMenu(arcade.View):
                 self.nb_perso_enligne.append(n["nom"])
 
         a = 2*(math.pi) // self.nb_perso
+        b = 0
         for i in self.nb_perso_enligne:
-            a += a
+            b += a
             print(a)
+            print(b)
             self.perso.append(
                 Text(
-                    x=260*(math.cos(a))+960,
-                    y=260*(math.sin(a))+540,
+                    x=260*(math.cos(math.radians(b)))+960,
+                    y=260*(math.sin(math.radians(b)))+540,
                     text=f"{i}",
-                    align=("right", "top"),
+                    align=("center", "center"),
                     size=12,
                 )
             )
