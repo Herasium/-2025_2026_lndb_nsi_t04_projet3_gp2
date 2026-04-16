@@ -20,19 +20,11 @@ class GameMenu(arcade.View):
         self.background_color: arcade.color = arcade.color.BLACK
         self.name = "GameMenu"
 
-<<<<<<< HEAD
         self.data: List[str] = []
         self.servers = [
             {"ip":"192.168.2.155","name":"Les copains"},
             {"ip":"192.168.2.123","name":"Vends Organes"},
             {"ip":"192.168.2.167","name":"Eudo pas cher"}
-=======
-        self.data: List[str] = [
-            {"nom":"Serveur 1","nombre":10,"max":15,"status":1},
-            {"nom":"Serveur 2","nombre":1,"max":100,"status":2},
-            {"nom":"Serveur 3","nombre":0,"max":2,"status":1},
-            {"nom":"Serveur 4","nombre":2,"max":19,"status":0}
->>>>>>> a097e267955e32207b5605a1242f9462a49ff305
         ]
 
         #1: En Cours
@@ -40,6 +32,8 @@ class GameMenu(arcade.View):
         #2: En Ligne
 
         self.setup_texts()
+
+        self.status = -1
 
         self.bg = Entity(0,0,1920,1080,texture.get("main_background"))
         self.cadre = Entity(320,220,256*5,128*5,texture.get("server_bg"))
@@ -74,11 +68,11 @@ class GameMenu(arcade.View):
         for i in self.data :
             a = a - 36*5
             if i["status"] == 0 :
-                status = texture.get("server_offline")
+                self.status = texture.get("server_offline")
             elif i["status"] == 1 :
-                status = texture.get("server_waiting")
-            else :
-                status = texture.get("server_online")
+                self.status = texture.get("server_waiting")
+            elif i["status"] == 2 :
+                self.status = texture.get("server_online")
 
             self.server.append(
                 [Text(
@@ -93,7 +87,7 @@ class GameMenu(arcade.View):
                     y=a-25+self.camera,
                     width=32*1.5,
                     height=32*1.5,
-                    sprite=status
+                    sprite=self.status
                 )]
             )
             
@@ -133,9 +127,10 @@ class GameMenu(arcade.View):
             self.button_quit.sprite = texture.get("quit_default")
             arcade.exit()
         for i in self.case_server :
-            if i.touched:
+            if i.touched and self.status == 2:
                 i.sprite = texture.get("server_case_default")
                 data.client.display(WaitingMenu())
+            
 
 
     def on_draw(self):
