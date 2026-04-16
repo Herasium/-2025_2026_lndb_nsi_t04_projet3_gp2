@@ -22,7 +22,7 @@ class Client:
 
         data.client = self
         
-    async def get_server_informations(self,ip):
+    async def get_server_informations(self,ip,name):
         rx_queue = multiprocessing.Queue()
         tx_queue = multiprocessing.Queue()
         
@@ -49,13 +49,15 @@ class Client:
         if self.network_process.is_alive():
             self.network_process.terminate()
             self.network_process.join()
-            
+
         if raw_msg is None:
-            return {"nom":ip,"nombre":0,"max":-1,"status":"Hors Ligne."}
+            return {"nom":name,"nombre":0,"max":-1,"status":0}
         try:
-            return json.loads(raw_msg)
+           parsed = json.loads(raw_msg)
+           parsed["nom"] = name
+           return parsed
         except json.JSONDecodeError:
-            return {"nom":ip,"nombre":0,"max":-1,"status":"Hors Ligne."}
+            return {"nom":name,"nombre":0,"max":-1,"status":0}
 
 
     def display(self, view: arcade.View) -> None:
