@@ -31,7 +31,7 @@ Loup noir
 Peut transformer une personne pour la game
 
 Crazy Dave
-~~~~~~~
+~~~~~~~~~~
 tuer le nombre de personne mort la nuit d'avant
 Apparition rare
 
@@ -45,7 +45,7 @@ WIP
 
 Mangemort
 ~~~~~~~~~
-Peut ramener une personne a la Variente
+Peut ramener une personne a la vie
 WIP
 
 Homelander
@@ -69,6 +69,6 @@ Soufleur de lune
 Peut arreter la nuit (1/3 nuit)
 
 Empoisonneur
-~~~~~~~~
+~~~~~~~~~~~~
 Peut faire une flatulence devant une maison (la personne peut pas voter)
 

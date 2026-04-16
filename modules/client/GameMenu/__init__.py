@@ -7,6 +7,7 @@ from modules.client.mouse import mouse
 from line_profiler import profile
 from modules.data import data
 import arcade
+from modules.client.WaitingMenu.__init__ import WaitingMenu
 
 class GameMenu(arcade.View):
 
@@ -61,8 +62,13 @@ class GameMenu(arcade.View):
                 Text(
                     x=960,
                     y=a + self.camera,
+<<<<<<< HEAD
                     text=f"{i["nom"]}  {i["nombre"]}/{i["max"]} ({i["status"]})",
                     align=("center", "center"),
+=======
+                    text=f'Nouveau {i["nom"]} pour {i["nombre"]} personnes',
+                    align=("left", "center"),
+>>>>>>> fba25e37a4754b4cce829a4710a67e2b12709f67
                     size=18,
                 )
             )
@@ -75,7 +81,7 @@ class GameMenu(arcade.View):
                     y=b + self.camera,
                     width=256*5,
                     height=36*5,
-                    sprite=texture.get("server_case"),
+                    sprite=texture.get("server_case_default"),
                 )
             )
 
@@ -84,17 +90,28 @@ class GameMenu(arcade.View):
         self, x: float, y: float, delta_x: float, delta_y: float
     ) -> None:
         mouse.position = (x, y)
+        for i in self.case_server :
+            if i.touched:
+                i.sprite = texture.get("server_case_hover")
+            else:
+                i.sprite = texture.get("server_case_default")
 
     @profile
     def on_mouse_press(self,x,y,buttons,modifier):
         if self.button_quit.touched :
             self.button_quit.sprite = texture.get("quit_click")
 
+
     @profile
     def on_mouse_release(self,x,y,buttons,modifier):
         if self.button_quit.touched :
             self.button_quit.sprite = texture.get("quit_default")
             arcade.exit()
+        for i in self.case_server :
+            if i.touched:
+                i.sprite = texture.get("server_case_default")
+                data.client.display(WaitingMenu())
+
 
     def on_draw(self):
         self.clear()
