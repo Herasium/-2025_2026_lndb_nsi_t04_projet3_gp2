@@ -17,7 +17,11 @@ class Loader:
         texture.add("quit_click",arcade.Sprite("assets/icons/quit_click.png"))
         texture.add("quit_default",arcade.Sprite("assets/icons/quit_default.png"))
         texture.add("server_bg",arcade.Sprite("assets/server_join/server_bg.png"))
-        texture.add("server_case",arcade.Sprite("assets/server_join/server_case.png"))
+        texture.add("server_case_default",arcade.Sprite("assets/server_join/server_case_default.png"))
+        texture.add("server_case_hover",arcade.Sprite("assets/server_join/server_case_hover.png"))
+        texture.add("server_online",arcade.Sprite("assets/status/status_0.png"))
+        texture.add("server_waiting",arcade.Sprite("assets/status/status_1.png"))
+        texture.add("server_offline",arcade.Sprite("assets/status/status_2.png"))
 
     def load(self):
         self.load_images()

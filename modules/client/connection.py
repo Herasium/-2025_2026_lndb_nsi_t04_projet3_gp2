@@ -10,6 +10,7 @@ class Connection:
         self.tx_queue = tx_queue 
 
     async def run_async(self):
+        print(f"Connection attempt to {self.url}")
         async with connect(self.url) as websocket:
             while True:
                 try:
