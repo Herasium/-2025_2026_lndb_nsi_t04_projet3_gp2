@@ -20,11 +20,19 @@ class GameMenu(arcade.View):
         self.background_color: arcade.color = arcade.color.BLACK
         self.name = "GameMenu"
 
+<<<<<<< HEAD
         self.data: List[str] = []
         self.servers = [
             {"ip":"192.168.2.155","name":"Les copains"},
             {"ip":"192.168.2.123","name":"Vends Organes"},
             {"ip":"192.168.2.167","name":"Eudo pas cher"}
+=======
+        self.data: List[str] = [
+            {"nom":"Serveur 1","nombre":10,"max":15,"status":1},
+            {"nom":"Serveur 2","nombre":1,"max":100,"status":2},
+            {"nom":"Serveur 3","nombre":0,"max":2,"status":1},
+            {"nom":"Serveur 4","nombre":2,"max":19,"status":0}
+>>>>>>> a097e267955e32207b5605a1242f9462a49ff305
         ]
 
         #1: En Cours
@@ -65,15 +73,30 @@ class GameMenu(arcade.View):
         a = (256*3.5) +5
         for i in self.data :
             a = a - 36*5
+            if i["status"] == 0 :
+                status = texture.get("server_offline")
+            elif i["status"] == 1 :
+                status = texture.get("server_waiting")
+            else :
+                status = texture.get("server_online")
+
             self.server.append(
-                Text(
+                [Text(
                     x=960,
                     y=a + self.camera,
-                    text=f"{i["nom"]}  {i["nombre"]}/{i["max"]} ({i["status"]})",
+                    text=f"{i["nom"]}  {i["nombre"]}/{i["max"]}",
                     align=("center", "center"),
                     size=18,
-                )
+                ),
+                Entity(
+                    x=500,
+                    y=a-25+self.camera,
+                    width=32*1.5,
+                    height=32*1.5,
+                    sprite=status
+                )]
             )
+            
         b = (256*3)+42
         for i in self.data:
             b = b - 36*5
@@ -125,7 +148,8 @@ class GameMenu(arcade.View):
             n.draw()
 
         for i in self.server:
-            i.draw()
+            i[0].draw()
+            i[1].draw()
         
     @profile
     def on_update(self,delta_time):
