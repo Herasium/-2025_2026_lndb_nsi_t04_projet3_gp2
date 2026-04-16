@@ -19,11 +19,15 @@ class GameMenu(arcade.View):
         self.name = "GameMenu"
 
         self.data: List[str] = [
-            {"nom":"Serveur 1","nombre":10,"max":15,"status":"En Cours."},
-            {"nom":"Serveur 2","nombre":1,"max":100,"status":"En Attente."},
-            {"nom":"Serveur 3","nombre":0,"max":2,"status":"Hors Ligne."},
-            {"nom":"Serveur 4","nombre":2,"max":19,"status":"Hors Ligne."}
+            {"nom":"Serveur 1","nombre":10,"max":15,"status":1},
+            {"nom":"Serveur 2","nombre":1,"max":100,"status":1},
+            {"nom":"Serveur 3","nombre":0,"max":2,"status":1},
+            {"nom":"Serveur 4","nombre":2,"max":19,"status":1}
         ]
+
+        #1: En Cours
+        #0: Hors Ligne
+        #2: En Ligne
 
         self.setup_texts()
 
