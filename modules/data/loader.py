@@ -20,8 +20,8 @@ class Loader:
         texture.add("server_case_default",arcade.Sprite("assets/server_join/server_case_default.png"))
         texture.add("server_case_hover",arcade.Sprite("assets/server_join/server_case_hover.png"))
         texture.add("server_online",arcade.Sprite("assets/status/status_0.png"))
-        texture.add("server_online",arcade.Sprite("assets/status/status_1.png"))
-        texture.add("server_online",arcade.Sprite("assets/status/status_3.png"))
+        texture.add("server_waiting",arcade.Sprite("assets/status/status_1.png"))
+        texture.add("server_offline",arcade.Sprite("assets/status/status_2.png"))
 
     def load(self):
         self.load_images()
