@@ -6,6 +6,7 @@ from modules.client.mouse import mouse
 from line_profiler import profile
 from modules.data import data
 import arcade
+from modules.client.WaitingMenu.__init__ import WaitingMenu
 
 class GameMenu(arcade.View):
 
@@ -88,7 +89,7 @@ class GameMenu(arcade.View):
         for i in self.case_server :
             if i.touched:
                 i.sprite = texture.get("server_case_default")
-
+                data.client.display(WaitingMenu())
 
 
     def on_draw(self):
