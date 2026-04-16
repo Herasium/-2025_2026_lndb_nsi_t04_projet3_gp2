@@ -20,19 +20,11 @@ class GameMenu(arcade.View):
         self.background_color: arcade.color = arcade.color.BLACK
         self.name = "GameMenu"
 
-<<<<<<< HEAD
         self.data: List[str] = []
         self.servers = [
             {"ip":"192.168.2.155","name":"Les copains"},
             {"ip":"192.168.2.123","name":"Vends Organes"},
             {"ip":"192.168.2.167","name":"Eudo pas cher"}
-=======
-        self.data: List[str] = [
-            {"nom":"Serveur 1","nombre":10,"max":15,"status":1},
-            {"nom":"Serveur 2","nombre":1,"max":100,"status":2},
-            {"nom":"Serveur 3","nombre":0,"max":2,"status":1},
-            {"nom":"Serveur 4","nombre":2,"max":19,"status":0}
->>>>>>> a097e267955e32207b5605a1242f9462a49ff305
         ]
 
         #1: En Cours
@@ -63,7 +55,7 @@ class GameMenu(arcade.View):
                     pass
                 self.data[index] = new_data
         except Exception as exc:
-            traceback.print_exc()
+            pass
 
     def setup_texts(self) -> None:
 
@@ -154,11 +146,6 @@ class GameMenu(arcade.View):
     @profile
     def on_update(self,delta_time):
         self.setup_texts()
-        if self._fetch_task.done():
-            exc = self._fetch_task.exception()
-            if exc:
-                print("⛔ _fetch_and_update failed:")
-                traceback.print_exception(type(exc), exc, exc.__traceback__)
 
     def on_mouse_scroll(
         self, x: float, y: float, scroll_x: float, scroll_y: float

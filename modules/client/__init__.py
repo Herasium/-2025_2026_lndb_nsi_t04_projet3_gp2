@@ -40,7 +40,7 @@ class Client:
 
         try:
             raw_msg: str = await loop.run_in_executor(
-                None, rx_queue.get, True, 20.0
+                None, rx_queue.get, True, 5.0
             )
 
         except queue.Empty:
