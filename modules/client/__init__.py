@@ -3,6 +3,10 @@ import threading
 import arcade
 import multiprocessing
 from line_profiler import profile
+from modules.data import data
+import json
+import queue
+import asyncio
 
 class Client:
     def __init__(self):
@@ -16,22 +20,49 @@ class Client:
             draw_rate=1 / 60,
         )
 
-        self.rx_queue = multiprocessing.Queue()
-        self.tx_queue = multiprocessing.Queue()
+        data.client = self
         
-        self.conn_obj = Connection("ws://192.168.2.177:8765", self.rx_queue, self.tx_queue)
+    async def get_server_informations(self,ip):
+        rx_queue = multiprocessing.Queue()
+        tx_queue = multiprocessing.Queue()
+        
+        message = json.dumps({"op":"server_info","data":{}})
+        tx_queue.put(message)
+
+        self.conn_obj = Connection(f"ws://{ip}:8765", rx_queue, tx_queue)
         self.network_process = multiprocessing.Process(
             target=self.conn_obj.start, 
             daemon=True
         )
-        
+        self.network_process.start()
+
+        loop = asyncio.get_running_loop()
+
+        try:
+            raw_msg: str = await loop.run_in_executor(
+                None, rx_queue.get, True, 20.0
+            )
+
+        except queue.Empty:
+            raw_msg = None
+
+        if self.network_process.is_alive():
+            self.network_process.terminate()
+            self.network_process.join()
+            
+        if raw_msg is None:
+            return {"nom":ip,"nombre":0,"max":-1,"status":"Hors Ligne."}
+        try:
+            return json.loads(raw_msg)
+        except json.JSONDecodeError:
+            return {"nom":ip,"nombre":0,"max":-1,"status":"Hors Ligne."}
+
 
     def display(self, view: arcade.View) -> None:
         self.window.show_view(view)
 
     @profile
     def run(self):
-        self.network_process.start()
         arcade.run()
 
         
