@@ -23,10 +23,5 @@ class Data:
         self.UI_EDITOR_GRID_SIZE: int = 27
         self.MAX_SCROLL: int = 1080
 
-    # def save(self) -> None:
-    #     preferences = {
-    #         "mouse_sensitivity": self.MOUSE_SENSI,
-    #     }
-
 data = Data()
 texture = Texture()

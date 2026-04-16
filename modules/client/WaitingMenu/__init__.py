@@ -15,18 +15,15 @@ class WaitingMenu(arcade.View):
         super().__init__()
         self.background_color: arcade.color = arcade.color.BLACK
         self.name = "WaitingMenu"
-        # self.bg = Entity(0,0,1920,1080,texture.get("main_background"))
         self.button_quit = Entity(1820, 990, 64, 64,texture.get("quit_default"))
         self.x = 0
-
-        # self.table_ronde = arcade.draw_circle_filled(960, 540, 60, [109, 155, 195, 255])
 
         self.data: List[str] = [
             {"nom": "Marine", "statue": "en ligne"},
             {"nom": "Eudocie", "statue": "en ligne"},
-            {"nom": "Louise", "statue": "deco"},
-            {"nom": "Elisa", "statue": "deco"},
-            {"nom": "Jeanne", "statue": "deco"},
+            {"nom": "Louise", "statue": "en ligne"},
+            {"nom": "Elisa", "statue": "en ligne"},
+            {"nom": "Jeanne", "statue": "en ligne"},
         ]
         
         self.nb_perso = 0
@@ -38,23 +35,19 @@ class WaitingMenu(arcade.View):
                 self.nb_perso += 1
                 self.nb_perso_enligne.append(n["nom"])
 
-        a = 2*(math.pi) // self.nb_perso
+        a = 2*(math.pi) / self.nb_perso
         b = 0
         for i in self.nb_perso_enligne:
             b += a
-            print(a)
-            print(b)
             self.perso.append(
                 Text(
-                    x=260*(math.cos(math.radians(b)))+960,
-                    y=260*(math.sin(math.radians(b)))+540,
+                    x=290*(math.cos(b))+960,
+                    y=290*(math.sin(b))+540,
                     text=f"{i}",
                     align=("center", "center"),
                     size=12,
                 )
             )
-        
-        # print (self.nb_perso, self.perso)
 
 
 
@@ -78,7 +71,6 @@ class WaitingMenu(arcade.View):
 
     def on_draw(self):
         self.clear()
-        # self.bg.draw()
         self.button_quit.draw()
         arcade.draw_circle_filled(960, 540, 260, [109, 155, 195, 255])
 
