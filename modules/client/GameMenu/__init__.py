@@ -62,13 +62,8 @@ class GameMenu(arcade.View):
                 Text(
                     x=960,
                     y=a + self.camera,
-<<<<<<< HEAD
                     text=f"{i["nom"]}  {i["nombre"]}/{i["max"]} ({i["status"]})",
                     align=("center", "center"),
-=======
-                    text=f'Nouveau {i["nom"]} pour {i["nombre"]} personnes',
-                    align=("left", "center"),
->>>>>>> fba25e37a4754b4cce829a4710a67e2b12709f67
                     size=18,
                 )
             )
