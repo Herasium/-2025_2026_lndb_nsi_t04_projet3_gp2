@@ -47,7 +47,7 @@ class GameMenu(arcade.View):
         
         self.button_quit = Entity(1820, 990, 64, 64,texture.get("quit_default"))
 
-        self.add_server = Entity(520,70,80*5,20*5,texture.get("join_default"))
+        self.add_server = Entity(520,70,80*5,20*5,texture.get("add_default"))
 
     async def _fetch_and_update(self) -> None:
         try:
@@ -119,11 +119,19 @@ class GameMenu(arcade.View):
     ) -> None:
         mouse.position = (x, y)
 
+        if self.add_server.touched :
+            self.add_server.sprite = texture.get("add_hover")
+        else :
+            self.add_server.sprite = texture.get("add_default")
+
 
     @profile
     def on_mouse_press(self,x,y,buttons,modifier):
         if self.button_quit.touched :
             self.button_quit.sprite = texture.get("quit_click")
+
+        if self.add_server.touched :
+            self.add_server.sprite = texture.get("add_click")
 
 
     @profile
