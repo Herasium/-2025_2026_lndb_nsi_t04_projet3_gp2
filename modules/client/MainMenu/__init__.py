@@ -24,10 +24,11 @@ class MainMenu(arcade.View):
         self.x = 0
         self.nickname_text = arcade.Text(
             text="",
-            x=100,
-            y=300,
+            x=120,
+            y=340,
             color=arcade.color.WHITE,
             font_size=18,
+            font_name="Press Start"
         )
     @profile
     def on_mouse_motion(
