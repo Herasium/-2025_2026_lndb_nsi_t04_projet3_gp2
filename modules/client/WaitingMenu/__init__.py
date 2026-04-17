@@ -54,7 +54,6 @@ class WaitingMenu(arcade.View):
             )
 
 
-
     @profile
     def on_mouse_motion(
         self, x: float, y: float, delta_x: float, delta_y: float
