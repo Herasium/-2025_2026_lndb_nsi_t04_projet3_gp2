@@ -9,6 +9,8 @@ from modules.data import data
 import arcade
 import traceback
 from modules.client.WaitingMenu.__init__ import WaitingMenu
+from modules.client.NewserverMenu.__init__ import NewserverMenu
+
 
 class GameMenu(arcade.View):
 
@@ -44,6 +46,8 @@ class GameMenu(arcade.View):
         )
         
         self.button_quit = Entity(1820, 990, 64, 64,texture.get("quit_default"))
+
+        self.add_server = Entity(520,70,80*5,20*5,texture.get("join_default"))
 
     async def _fetch_and_update(self) -> None:
         try:
@@ -109,7 +113,6 @@ class GameMenu(arcade.View):
             else:
                 i.sprite = texture.get("server_case_default")
 
-
     @profile
     def on_mouse_motion(
         self, x: float, y: float, delta_x: float, delta_y: float
@@ -121,7 +124,17 @@ class GameMenu(arcade.View):
     def on_mouse_press(self,x,y,buttons,modifier):
         if self.button_quit.touched :
             self.button_quit.sprite = texture.get("quit_click")
-        
+
+
+    @profile
+    def on_mouse_release(self,x,y,buttons,modifier):
+        if self.button_quit.touched :
+            self.button_quit.sprite = texture.get("quit_default")
+            arcade.exit()
+
+        if self.add_server.touched :
+            data.client.display(NewserverMenu())
+
         for i in range(len(self.case_server)):
             server = self.data[i]
             button = self.case_server[i]
@@ -133,18 +146,12 @@ class GameMenu(arcade.View):
                 data.client.display(WaitingMenu(ip, name))
 
 
-    @profile
-    def on_mouse_release(self,x,y,buttons,modifier):
-        if self.button_quit.touched :
-            self.button_quit.sprite = texture.get("quit_default")
-            arcade.exit()
-
-
     def on_draw(self):
         self.clear()
         self.bg.draw()
         self.cadre.draw()
         self.button_quit.draw()
+        self.add_server.draw()
 
         for n in self.case_server:
             n.draw()
