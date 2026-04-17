@@ -121,13 +121,16 @@ class GameMenu(arcade.View):
         if self.button_quit.touched :
             self.button_quit.sprite = texture.get("quit_click")
         
-        for i in self.case_server : 
-            s = self.servers.index(i)
+        for i in range(len(self.case_server)):
+            server = self.data[i]
+            button = self.case_server[i]
+        # for i in self.case_server : 
+            s = self.servers[i]
             ip = s["ip"]
             name = s["name"]
-            if i.touched :
+            if button.touched and server["status"] == 2:
+                button.sprite = texture.get("server_case_default")
                 data.client.display(WaitingMenu(ip, name))
-
 
 
     @profile
@@ -135,13 +138,13 @@ class GameMenu(arcade.View):
         if self.button_quit.touched :
             self.button_quit.sprite = texture.get("quit_default")
             arcade.exit()
-        for i in range(len(self.case_server)):
-            server = self.data[i]
-            button = self.case_server[i]
-            if button.touched and server["status"] == 2:
-                print("appuyé")
-                button.sprite = texture.get("server_case_default")
-                data.client.display(WaitingMenu())
+        # for i in range(len(self.case_server)):
+        #     server = self.data[i]
+        #     button = self.case_server[i]
+        #     if button.touched and server["status"] == 2:
+        #         print("appuyé")
+        #         button.sprite = texture.get("server_case_default")
+        #         data.client.display(WaitingMenu())
             
 
 
