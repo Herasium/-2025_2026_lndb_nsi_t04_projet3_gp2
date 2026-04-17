@@ -33,7 +33,7 @@ class GameMenu(arcade.View):
 
         self.setup_texts()
 
-        self.status = -1
+        
 
         self.bg = Entity(0,0,1920,1080,texture.get("main_background"))
         self.cadre = Entity(320,220,256*5,128*5,texture.get("server_bg"))
@@ -103,17 +103,18 @@ class GameMenu(arcade.View):
                     sprite=texture.get("server_case_default"),
                 )
             )
+        for i in self.case_server :
+            if i.touched:
+                i.sprite = texture.get("server_case_hover")
+            else:
+                i.sprite = texture.get("server_case_default")
 
     @profile
     def on_mouse_motion(
         self, x: float, y: float, delta_x: float, delta_y: float
     ) -> None:
         mouse.position = (x, y)
-        for i in self.case_server :
-            if i.touched:
-                i.sprite = texture.get("server_case_hover")
-            else:
-                i.sprite = texture.get("server_case_default")
+
 
     @profile
     def on_mouse_press(self,x,y,buttons,modifier):
@@ -126,9 +127,12 @@ class GameMenu(arcade.View):
         if self.button_quit.touched :
             self.button_quit.sprite = texture.get("quit_default")
             arcade.exit()
-        for i in self.case_server :
-            if i.touched and self.status == 2:
-                i.sprite = texture.get("server_case_default")
+        for i in range(len(self.case_server)):
+            server = self.data[i]
+            button = self.case_server[i]
+            if button.touched and server["status"] == 2:
+                print("appuyé")
+                button.sprite = texture.get("server_case_default")
                 data.client.display(WaitingMenu())
             
 
