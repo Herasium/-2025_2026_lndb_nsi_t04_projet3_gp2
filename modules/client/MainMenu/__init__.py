@@ -40,7 +40,6 @@ class MainMenu(arcade.View):
             self.button_join.sprite = texture.get("join_default")
 
 
-    
     @profile
     def on_mouse_press(self,x,y,buttons,modifier):
         if self.button_join.touched :
