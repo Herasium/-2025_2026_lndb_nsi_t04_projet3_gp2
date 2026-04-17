@@ -9,6 +9,7 @@ class Loader:
 
     def load_images(self):
         texture.add("main_background",arcade.Sprite("assets/homescreen/homescreen_v1.png"))
+        texture.add("join_background",arcade.Sprite("assets/join_background/server_screen.png"))
         texture.add("join_default",arcade.Sprite("assets/buttons/join_default.png"))
         texture.add("join_click",arcade.Sprite("assets/buttons/join_click.png"))
         texture.add("join_hover",arcade.Sprite("assets/buttons/join_hover.png"))
@@ -22,6 +23,8 @@ class Loader:
         texture.add("server_online",arcade.Sprite("assets/status/status_0.png"))
         texture.add("server_waiting",arcade.Sprite("assets/status/status_1.png"))
         texture.add("server_offline",arcade.Sprite("assets/status/status_2.png"))
+        texture.add("nickname",arcade.Sprite("assets/buttons/Nickname_Button.png"))
+        texture.add("nickname_typing",arcade.Sprite("assets/buttons/Nickname_Button_Typing.png"))
 
     def load(self):
         self.load_images()

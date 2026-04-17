@@ -17,8 +17,18 @@ class MainMenu(arcade.View):
         self.button_join = Entity(100,200,400,100,texture.get("join_default"))
         self.button_setting = Entity(1730,990,64,64,texture.get("settings_default"))
         self.button_quit = Entity(1820, 990, 64, 64,texture.get("quit_default"))
+        self.input_nickname = Entity(100,300,400,100, texture.get("nickname"))
+        self.done = True
+        self.nickname = ""
+        self.is_typing = False
         self.x = 0
-
+        self.nickname_text = arcade.Text(
+            text="",
+            x=100,
+            y=300,
+            color=arcade.color.WHITE,
+            font_size=18,
+        )
     @profile
     def on_mouse_motion(
         self, x: float, y: float, delta_x: float, delta_y: float
@@ -45,7 +55,11 @@ class MainMenu(arcade.View):
 
     @profile
     def on_mouse_release(self,x,y,buttons,modifier):
-        if self.button_join.touched :
+        if self.input_nickname.touched :
+            self.is_typing = True
+            self.input_nickname.sprite = texture.get("nickname_typing")
+
+        if self.button_join.touched and not self.is_typing :
             self.button_join.sprite = texture.get("join_default")
             data.client.display(GameMenu())
 
@@ -56,6 +70,19 @@ class MainMenu(arcade.View):
             self.button_quit.sprite = texture.get("quit_default")
             arcade.exit()
 
+    def on_text (self, text:str):
+        if self.is_typing == True :
+            self.nickname += text
+            self.nickname_text.text = self.nickname
+
+    def on_key_press(self, key, modifiers):
+        if self.is_typing:
+            if key == arcade.key.ENTER:
+                self.is_typing = False
+                self.done = True
+                
+            elif key == arcade.key.BACKSPACE:
+                self.nickname = self.nickname[:-1]
 
     def on_draw(self):
         self.clear()
@@ -63,6 +90,8 @@ class MainMenu(arcade.View):
         self.button_join.draw()
         self.button_setting.draw()
         self.button_quit.draw()
+        self.input_nickname.draw()
+        self.nickname_text.draw()
 
     @profile
     def on_update(self,delta_time):

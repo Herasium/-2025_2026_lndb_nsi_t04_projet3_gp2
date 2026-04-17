@@ -35,7 +35,7 @@ class GameMenu(arcade.View):
 
         
 
-        self.bg = Entity(0,0,1920,1080,texture.get("main_background"))
+        self.bg = Entity(0,0,1920,1080,texture.get("join_background"))
         self.cadre = Entity(320,220,256*5,128*5,texture.get("server_bg"))
         self.x = 0
         self._fetch_task = asyncio.run_coroutine_threadsafe(
