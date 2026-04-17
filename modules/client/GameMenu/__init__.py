@@ -64,7 +64,7 @@ class GameMenu(arcade.View):
         self.server: List[Text] = []
         self.case_server: List[Entity] = []
 
-        a = (256*3.5) +5
+        a = (256*3.5) + 5
         for i in self.data :
             a = a - 36*5
             if i["status"] == 0 :
@@ -91,7 +91,7 @@ class GameMenu(arcade.View):
                 )]
             )
             
-        b = (256*3)+42
+        b = (256*3) + 42
         for i in self.data:
             b = b - 36*5
             self.case_server.append(
@@ -119,6 +119,14 @@ class GameMenu(arcade.View):
     def on_mouse_press(self,x,y,buttons,modifier):
         if self.button_quit.touched :
             self.button_quit.sprite = texture.get("quit_click")
+        
+        for i in self.case_server : 
+            s = self.servers.index(i)
+            ip = s["ip"]
+            name = s["name"]
+            if i.touched :
+                data.client.display(WaitingMenu(ip, name))
+
 
 
     @profile

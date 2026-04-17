@@ -11,18 +11,22 @@ import arcade
 
 class WaitingMenu(arcade.View):
 
-    def __init__(self):
+    def __init__(self, ip_server, name_server):
+
         super().__init__()
         self.background_color: arcade.color = arcade.color.BLACK
         self.name = "WaitingMenu"
+
         self.button_quit = Entity(1820, 990, 64, 64,texture.get("quit_default"))
         self.x = 0
+        self.ip_server = ip_server
+        self.name_server = name_server
 
         self.data: List[str] = [
             {"nom": "Marine", "statue": "en ligne"},
             {"nom": "Eudocie", "statue": "en ligne"},
             {"nom": "Louise", "statue": "en ligne"},
-            {"nom": "Elisa", "statue": "en ligne"},
+            {"nom": "Elisa", "statue": "nn"},
             {"nom": "Jeanne", "statue": "en ligne"},
         ]
         
