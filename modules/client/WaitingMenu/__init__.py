@@ -23,11 +23,11 @@ class WaitingMenu(arcade.View):
         self.name_server = name_server
 
         self.data: List[str] = [
-            {"nom": "Marine", "statue": "en ligne"},
-            {"nom": "Eudocie", "statue": "en ligne"},
-            {"nom": "Louise", "statue": "en ligne"},
-            {"nom": "Elisa", "statue": "nn"},
-            {"nom": "Jeanne", "statue": "en ligne"},
+            {"nom": "Marine", "statut": "en ligne"},
+            {"nom": data.nickname, "statut": "en ligne"},
+            {"nom": "Louise", "statut": "en ligne"},
+            {"nom": "Elisa", "statut": "nn"},
+            {"nom": "Jeanne", "statut": "en ligne"},
         ]
         
         self.nb_perso = 0
@@ -35,7 +35,7 @@ class WaitingMenu(arcade.View):
         self.perso: List[str] = []
 
         for n in self.data:
-            if n["statue"] == "en ligne":
+            if n["statut"] == "en ligne":
                 self.nb_perso += 1
                 self.nb_perso_enligne.append(n["nom"])
 
