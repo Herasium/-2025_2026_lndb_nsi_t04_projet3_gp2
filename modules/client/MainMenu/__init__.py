@@ -59,7 +59,7 @@ class MainMenu(arcade.View):
             self.is_typing = True
             self.input_nickname.sprite = texture.get("nickname_typing")
 
-        if self.button_join.touched and not self.is_typing :
+        if self.button_join.touched and self.done :
             self.button_join.sprite = texture.get("join_default")
             data.client.display(GameMenu())
 
@@ -80,7 +80,7 @@ class MainMenu(arcade.View):
             if key == arcade.key.ENTER:
                 self.is_typing = False
                 self.done = True
-                
+                data.client.display(GameMenu())
             elif key == arcade.key.BACKSPACE:
                 self.nickname = self.nickname[:-1]
 
