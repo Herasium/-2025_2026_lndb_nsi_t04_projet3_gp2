@@ -24,9 +24,7 @@ class GameMenu(arcade.View):
 
         self.data: List[str] = []
         self.servers = [
-            {"ip":"192.168.3.81","name":"Les copains"},
-            {"ip":"192.168.2.123","name":"Vends Organes"},
-            {"ip":"192.168.2.167","name":"Eudo pas cher"}
+            {"ip":"localhost","name":"localhost"},
         ]
 
         #1: En Cours

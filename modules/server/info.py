@@ -1,6 +1,6 @@
 
 import json
 
-async def server_informations(message,websocket):
+async def server_informations(message,client):
     raw = {"nom":"Serveur Distant","nombre":0,"max":10,"status":2}
-    await websocket.send(json.dumps(raw))
+    await client.conn.send(json.dumps(raw))

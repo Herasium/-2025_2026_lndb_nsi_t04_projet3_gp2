@@ -26,7 +26,7 @@ class Client:
         rx_queue = multiprocessing.Queue()
         tx_queue = multiprocessing.Queue()
         
-        message = json.dumps({"op":"server_info","data":{}})
+        message = json.dumps({"opcode":"server_info","data":{}})
         tx_queue.put(message)
 
         self.conn_obj = Connection(f"ws://{ip}:8765", rx_queue, tx_queue)
