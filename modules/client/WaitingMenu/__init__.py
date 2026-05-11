@@ -11,7 +11,7 @@ import arcade
 
 class WaitingMenu(arcade.View):
 
-    def __init__(self, ip_server, name_server):
+    def __init__(self,data,status):
 
         super().__init__()
         self.background_color: arcade.color = arcade.color.BLACK
@@ -19,25 +19,15 @@ class WaitingMenu(arcade.View):
 
         self.button_quit = Entity(1820, 990, 64, 64,texture.get("quit_default"))
         self.x = 0
-        self.ip_server = ip_server
-        self.name_server = name_server
-
-        self.data: List[str] = [
-            {"nom": "Marine", "statut": "en ligne"},
-            {"nom": data.nickname, "statut": "en ligne"},
-            {"nom": "Louise", "statut": "en ligne"},
-            {"nom": "Elisa", "statut": "nn"},
-            {"nom": "Jeanne", "statut": "en ligne"},
-        ]
         
+        self.data: List[str] = data
         self.nb_perso = 0
         self.nb_perso_enligne: List[str] = []
         self.perso: List[str] = []
 
         for n in self.data:
-            if n["statut"] == "en ligne":
-                self.nb_perso += 1
-                self.nb_perso_enligne.append(n["nom"])
+            self.nb_perso += 1
+            self.nb_perso_enligne.append(n["name"])
 
         a = 2*(math.pi) / self.nb_perso
         b = 0

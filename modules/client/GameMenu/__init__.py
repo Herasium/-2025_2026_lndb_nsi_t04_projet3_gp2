@@ -8,8 +8,10 @@ from line_profiler import profile
 from modules.data import data
 import arcade
 import traceback
-from modules.client.WaitingMenu.__init__ import WaitingMenu
-from modules.client.NewserverMenu.__init__ import NewserverMenu
+from modules.client.WaitingMenu import WaitingMenu
+from modules.client.NewserverMenu import NewserverMenu
+from modules.client.orchestator import Orchestator
+
 
 
 class GameMenu(arcade.View):
@@ -149,7 +151,9 @@ class GameMenu(arcade.View):
             name = s["name"]
             if button.touched and server["status"] == 2:
                 button.sprite = texture.get("server_case_default")
-                data.client.display(WaitingMenu(ip, name))
+                #Server Connection
+                orc = Orchestator(ip)
+                asyncio.run_coroutine_threadsafe(orc.run(),data.loop)         
 
 
     def on_draw(self):

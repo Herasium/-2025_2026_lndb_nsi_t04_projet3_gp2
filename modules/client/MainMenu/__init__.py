@@ -61,9 +61,9 @@ class MainMenu(arcade.View):
 
         if self.button_join.touched and self.done and self.nickname and len(self.nickname)!= 0 :
             self.button_join.sprite = texture.get("join_default")
-            data.client.display(GameMenu())
             data.nickname = self.nickname
-
+            data.client.display(GameMenu())
+            
         if self.button_setting.touched :
             self.button_setting.sprite = texture.get("settings_default")
 

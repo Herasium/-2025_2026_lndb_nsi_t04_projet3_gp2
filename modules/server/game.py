@@ -293,7 +293,7 @@ class Game:
             await asyncio.sleep(0.1)
 
         logger.debug("Player count met, starting game in 10 seconds.")
-        await self.send_all_players("game_start_soon", {})
+        await self.send_all_players_waiting("game_start_soon", {})
         self.status = 1
 
         await asyncio.sleep(10)
