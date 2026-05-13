@@ -1,31 +1,55 @@
 import asyncio
 from websockets.asyncio.client import connect
 import multiprocessing
+import contextlib
 import queue
+import os
+
+
 
 class Connection:
-    def __init__(self, url, rx_queue, tx_queue):
+    def __init__(self, url, rx_queue, tx_queue, dead):
         self.url = url
-        self.rx_queue = rx_queue 
-        self.tx_queue = tx_queue 
+        self.rx_queue = rx_queue
+        self.tx_queue = tx_queue
+        self.dead = dead
+
+    async def recv_loop(self, websocket):
+        try:
+            async for msg in websocket:
+                self.rx_queue.put(msg)
+        except Exception:
+            self.dead.value = 1
+            print("dead")
+            raise Exception("Dead")
+
+    async def send_loop(self, websocket):
+        try:
+            while True:
+                to_send = await asyncio.to_thread(self.tx_queue.get)
+                await websocket.send(to_send)
+        except Exception:
+            self.dead.value = 1
+            print("dead")
+            raise Exception("Dead")
+
 
     async def run_async(self):
-        print(f"Connection attempt to {self.url}")
         async with connect(self.url) as websocket:
-            while True:
-                try:
-                    msg = await asyncio.wait_for(websocket.recv(), timeout=0.001)
-                    self.rx_queue.put(msg)
-                except (asyncio.TimeoutError, Exception):
-                    pass
+            recv_task = asyncio.create_task(self.recv_loop(websocket))
+            send_task = asyncio.create_task(self.send_loop(websocket))
 
-                try:
-                    to_send = self.tx_queue.get_nowait()
-                    await websocket.send(to_send)
-                except queue.Empty:
-                    pass
-                
-                await asyncio.sleep(0.001)
+            done, pending = await asyncio.wait(
+                (recv_task, send_task), return_when=asyncio.FIRST_EXCEPTION
+            )
+
+            for t in pending:
+                t.cancel()
+                with contextlib.suppress(Exception):
+                    await t
 
     def start(self):
+        print(self.url)
         asyncio.run(self.run_async())
+
+

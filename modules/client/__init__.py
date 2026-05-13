@@ -25,11 +25,12 @@ class Client:
     async def get_server_informations(self,ip,name):
         rx_queue = multiprocessing.Queue()
         tx_queue = multiprocessing.Queue()
+        dead = multiprocessing.Value("i",0)
         
-        message = json.dumps({"op":"server_info","data":{}})
+        message = json.dumps({"opcode":"server_info","data":{}})
         tx_queue.put(message)
 
-        self.conn_obj = Connection(f"ws://{ip}:8765", rx_queue, tx_queue)
+        self.conn_obj = Connection(f"ws://{ip}:8765", rx_queue, tx_queue,dead)
         self.network_process = multiprocessing.Process(
             target=self.conn_obj.start, 
             daemon=True
@@ -49,7 +50,7 @@ class Client:
         if self.network_process.is_alive():
             self.network_process.terminate()
             self.network_process.join()
-
+        
         if raw_msg is None:
             return {"nom":name,"nombre":0,"max":-1,"status":0}
         try:
@@ -58,6 +59,19 @@ class Client:
            return parsed
         except json.JSONDecodeError:
             return {"nom":name,"nombre":0,"max":-1,"status":0}
+
+    def connect(self,ip):
+        self.rx_queue = multiprocessing.Queue()
+        self.tx_queue = multiprocessing.Queue()
+        self.dead_connection = multiprocessing.Value("i",0)
+
+        self.conn_obj = Connection(f"ws://{ip}:8765", self.rx_queue, self.tx_queue, self.dead_connection)
+        self.network_process = multiprocessing.Process(
+            target=self.conn_obj.start, 
+            daemon=True
+        )
+        self.network_process.start()
+
 
 
     def display(self, view: arcade.View) -> None:

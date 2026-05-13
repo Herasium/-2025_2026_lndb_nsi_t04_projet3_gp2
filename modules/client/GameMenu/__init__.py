@@ -8,7 +8,11 @@ from line_profiler import profile
 from modules.data import data
 import arcade
 import traceback
-from modules.client.WaitingMenu.__init__ import WaitingMenu
+from modules.client.WaitingMenu import WaitingMenu
+from modules.client.NewserverMenu import NewserverMenu
+from modules.client.orchestator import Orchestator
+
+
 
 class GameMenu(arcade.View):
 
@@ -22,9 +26,8 @@ class GameMenu(arcade.View):
 
         self.data: List[str] = []
         self.servers = [
-            {"ip":"192.168.2.155","name":"Les copains"},
-            {"ip":"192.168.2.123","name":"Vends Organes"},
-            {"ip":"192.168.2.167","name":"Eudo pas cher"}
+            {"ip":"localhost","name":"localhost"},
+            {"ip":"192.168.3.48","name":"server"},
         ]
 
         #1: En Cours
@@ -35,7 +38,7 @@ class GameMenu(arcade.View):
 
         
 
-        self.bg = Entity(0,0,1920,1080,texture.get("main_background"))
+        self.bg = Entity(0,0,1920,1080,texture.get("join_background"))
         self.cadre = Entity(320,220,256*5,128*5,texture.get("server_bg"))
         self.x = 0
         self._fetch_task = asyncio.run_coroutine_threadsafe(
@@ -44,6 +47,8 @@ class GameMenu(arcade.View):
         )
         
         self.button_quit = Entity(1820, 990, 64, 64,texture.get("quit_default"))
+
+        self.add_server = Entity(520,70,80*5,20*5,texture.get("add_default"))
 
     async def _fetch_and_update(self) -> None:
         try:
@@ -109,28 +114,25 @@ class GameMenu(arcade.View):
             else:
                 i.sprite = texture.get("server_case_default")
 
-
     @profile
     def on_mouse_motion(
         self, x: float, y: float, delta_x: float, delta_y: float
     ) -> None:
         mouse.position = (x, y)
 
+        if self.add_server.touched :
+            self.add_server.sprite = texture.get("add_hover")
+        else :
+            self.add_server.sprite = texture.get("add_default")
+
 
     @profile
     def on_mouse_press(self,x,y,buttons,modifier):
         if self.button_quit.touched :
             self.button_quit.sprite = texture.get("quit_click")
-        
-        for i in range(len(self.case_server)):
-            server = self.data[i]
-            button = self.case_server[i]
-            s = self.servers[i]
-            ip = s["ip"]
-            name = s["name"]
-            if button.touched and server["status"] == 2:
-                button.sprite = texture.get("server_case_default")
-                data.client.display(WaitingMenu(ip, name))
+
+        if self.add_server.touched :
+            self.add_server.sprite = texture.get("add_click")
 
 
     @profile
@@ -139,12 +141,28 @@ class GameMenu(arcade.View):
             self.button_quit.sprite = texture.get("quit_default")
             arcade.exit()
 
+        if self.add_server.touched :
+            data.client.display(NewserverMenu())
+
+        for i in range(len(self.case_server)):
+            server = self.data[i]
+            button = self.case_server[i]
+            s = self.servers[i]
+            ip = s["ip"]
+            name = s["name"]
+            if button.touched and server["status"] == 2:
+                button.sprite = texture.get("server_case_default")
+                #Server Connection
+                orc = Orchestator(ip)
+                asyncio.run_coroutine_threadsafe(orc.run(),data.loop)         
+
 
     def on_draw(self):
         self.clear()
         self.bg.draw()
         self.cadre.draw()
         self.button_quit.draw()
+        self.add_server.draw()
 
         for n in self.case_server:
             n.draw()

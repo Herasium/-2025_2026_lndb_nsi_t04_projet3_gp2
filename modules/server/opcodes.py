@@ -6,5 +6,3 @@ opcodes = {
     "server_info": server_informations
 
 }
-
-
