@@ -50,7 +50,7 @@ class Client:
         if self.network_process.is_alive():
             self.network_process.terminate()
             self.network_process.join()
-
+        
         if raw_msg is None:
             return {"nom":name,"nombre":0,"max":-1,"status":0}
         try:

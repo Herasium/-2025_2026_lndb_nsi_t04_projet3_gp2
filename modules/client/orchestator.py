@@ -12,6 +12,12 @@ from modules.client.RoleAttributionMenu import RoleAttribution
 from modules.client.NightMenu import NightMenu
 from modules.client.WerewolfNight import WerewolfNight
 from modules.client.WerewolfVote import WerewolfVote
+from modules.client.WerewolfEnd import WerewolfEnd
+from modules.client.DayMenu import DayMenu
+from modules.client.KilledMenu import KilledMenu
+from modules.client.NightDeath import NightDeath
+from modules.client.DayDeath import DayDeath
+from modules.client.DayVote import DayVote
 
 logger = Logger("Orchestrator")
 
@@ -52,6 +58,41 @@ class Orchestator:
 
         pyglet.clock.schedule_once(switch_view, 0)
 
+    async def night_werewolf_end(self):
+        def switch_view(dt):
+            new_menu = WerewolfEnd()
+            data.client.display(new_menu)
+
+        pyglet.clock.schedule_once(switch_view, 0)
+
+    async def switch_day(self):
+        def switch_view(dt):
+            new_menu = DayMenu()
+            data.client.display(new_menu)
+
+        pyglet.clock.schedule_once(switch_view, 0)
+
+    async def night_death(self,received):
+        def switch_view(dt):
+            new_menu = NightDeath(received["death"])
+            data.client.display(new_menu)
+
+        pyglet.clock.schedule_once(switch_view, 0)
+
+    async def killed(self):
+        def switch_view(dt):
+            new_menu = KilledMenu()
+            data.client.display(new_menu)
+
+        pyglet.clock.schedule_once(switch_view, 0)        
+
+    async def night_death(self,received):
+        def switch_view(dt):
+            new_menu = DayDeath(received["death"])
+            data.client.display(new_menu)
+
+        pyglet.clock.schedule_once(switch_view, 0)      
+
     async def night_werewolf_vote(self,received):
 
         def back(choice):
@@ -64,6 +105,16 @@ class Orchestator:
 
         pyglet.clock.schedule_once(switch_view, 0)
 
+    async def day_vote(self,received):
+
+        def back(choice):
+            asyncio.run(self.send("day_vote_response",{"vote":choice["id"]}))
+            
+        def switch_view(dt):
+            new_menu = DayVote(received["villagers"],back)
+            data.client.display(new_menu)
+
+        pyglet.clock.schedule_once(switch_view, 0)
 
     async def read(self):
 
@@ -88,7 +139,18 @@ class Orchestator:
                 await self.night_werewolf_start()
             case "night_werewolf_vote":
                 await self.night_werewolf_vote(data)
-
+            case "switch_day":
+                await self.switch_day()
+            case "night_werewolf_end":
+                await self.night_werewolf_end()
+            case "killed":
+                await self.killed()
+            case "night_death":
+                await self.night_death(data)
+            case "day_death":
+                await self.night_death(data)
+            case "day_vote":
+                await self.day_vote(data)
 
     async def run(self):
         data.client.connect(self.ip)
