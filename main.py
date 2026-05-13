@@ -5,6 +5,7 @@ from modules.client.MainMenu import MainMenu
 from modules.client.WaitingMenu import WaitingMenu
 from modules.client.NightMenu import NightMenu
 from modules.client.WerewolfVote import WerewolfVote
+from modules.client.RoleAttributionMenu import RoleAttribution
 
 from modules.server import Server
 from modules.data.loader import Loader
