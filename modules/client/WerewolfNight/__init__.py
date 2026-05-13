@@ -19,6 +19,7 @@ class WerewolfNight(arcade.View):
 
         self.bg = Entity(0,0,1920,1080,texture.get("join_background"))
         self.text = Text(x=1920/2,y=1080/2,width=500,height=100,text=f"It's WEREWOLF time !")
+        self.button_quit = Entity(1820, 990, 64, 64,texture.get("quit_default"))
 
 
     @profile
@@ -30,13 +31,18 @@ class WerewolfNight(arcade.View):
 
     @profile
     def on_mouse_press(self,x,y,buttons,modifier):
-        pass
+        if self.button_quit.touched :
+            self.button_quit.sprite = texture.get("quit_click")
+
 
     @profile
     def on_mouse_release(self,x,y,buttons,modifier):
-        pass
+        if self.button_quit.touched :
+            self.button_quit.sprite = texture.get("quit_default")
+            arcade.exit()
 
     def on_draw(self):
         self.clear()
         self.text.draw()
-
+        self.bg.draw()
+        self.button_quit.draw()
