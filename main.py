@@ -3,6 +3,7 @@ import threading
 from modules.client import Client
 from modules.client.MainMenu import MainMenu
 from modules.client.WaitingMenu import WaitingMenu
+from modules.client.NightMenu import NightMenu
 from modules.client.RoleAttributionMenu import RoleAttribution
 
 from modules.server import Server
