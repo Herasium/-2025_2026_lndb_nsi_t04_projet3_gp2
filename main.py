@@ -6,6 +6,7 @@ from modules.client.WaitingMenu import WaitingMenu
 from modules.client.NightMenu import NightMenu
 from modules.client.WerewolfVote import WerewolfVote
 from modules.client.RoleAttributionMenu import RoleAttribution
+from modules.client.WerewolfNight import WerewolfNight
 
 from modules.server import Server
 from modules.data.loader import Loader
@@ -28,7 +29,8 @@ def main():
     data.loop = start_async_loop()
 
     # client.display(WerewolfVote([{"name":"Eudoc", "id":"0001"}, {"name":"Marine", "id":"0002"}], back))
-    client.display(MainMenu)
+    client.display(WerewolfNight())
+    # client.display(MainMenu())
     client.run()
 
 def start_async_loop() -> asyncio.AbstractEventLoop:
