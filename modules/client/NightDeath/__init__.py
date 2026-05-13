@@ -46,5 +46,5 @@ class NightDeath(arcade.View):
     def on_draw(self):
         self.clear()
         self.bg.draw()
-        self.texts.draw()
-
+        for i in self.texts:
+            i.draw()
