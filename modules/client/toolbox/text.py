@@ -24,6 +24,7 @@ class Text:
         align: Tuple[str, str] = ("center", "center"),
         size: int = 18,
         multiline: bool = False,
+        color: arcade.color = arcade.color.WHITE
     ) -> None:
         """
         Initialise l'élément Text et ses propriétés de disposition.
@@ -44,7 +45,7 @@ class Text:
         self._width: float = width
         self._height: float = height
 
-        self._color: arcade.color = arcade.color.WHITE
+        self._color: arcade.color = color
         self.hitbox: HitBox = HitBox()
 
         self._name: str = text
