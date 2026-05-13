@@ -1,11 +1,11 @@
 import asyncio
 from websockets.asyncio.client import connect
 import multiprocessing
+import contextlib
 import queue
-from modules.logger import Logger
 import os
 
-logger = Logger("Connection")
+
 
 class Connection:
     def __init__(self, url, rx_queue, tx_queue, dead):
@@ -20,7 +20,7 @@ class Connection:
                 self.rx_queue.put(msg)
         except Exception:
             self.dead.value = 1
-            logger.error("Dead Connection.")
+            print("dead")
             raise Exception("Dead")
 
     async def send_loop(self, websocket):
@@ -30,7 +30,7 @@ class Connection:
                 await websocket.send(to_send)
         except Exception:
             self.dead.value = 1
-            logger.error("Dead Connection.")
+            print("dead")
             raise Exception("Dead")
 
 
@@ -49,6 +49,7 @@ class Connection:
                     await t
 
     def start(self):
-        logger.success(f"Connection process started. {self.url}")
-        logger.success(f"Name: {__name__} Parent: {os.getppid()} Self: {os.getpid()}")
+        print(self.url)
         asyncio.run(self.run_async())
+
+

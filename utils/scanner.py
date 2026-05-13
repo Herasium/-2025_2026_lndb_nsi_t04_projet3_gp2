@@ -8,7 +8,7 @@ TIMEOUT = 0.5
 def get_local_network():
     hostname = socket.gethostname()
     local_ip = socket.gethostbyname(hostname)
-    network = ipaddress.ip_network(local_ip + "/24", strict=False)
+    network = ipaddress.ip_network(local_ip + "/16", strict=False)
     return network
 
 def scan(ip):
