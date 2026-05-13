@@ -18,7 +18,8 @@ class RoleAttribution(arcade.View):
         self.name = "RoleAttribution"
         self.role = role
 
-        self.text = Text(x=1920/2,y=1080/2,width=500,height=100,text=f"You are a {role} ! (keep it a secret).")
+        self.text = Text(x=1920/2,y=1080/2,width=500,height=100,text=f"Bravo tu es {role} ! (garde le secret).")
+        self.button_quit = Entity(1820, 990, 64, 64,texture.get("quit_default"))
 
 
     @profile
@@ -30,13 +31,17 @@ class RoleAttribution(arcade.View):
 
     @profile
     def on_mouse_press(self,x,y,buttons,modifier):
-        pass
+        if self.button_quit.touched :
+            self.button_quit.sprite = texture.get("quit_click")
 
     @profile
     def on_mouse_release(self,x,y,buttons,modifier):
-        pass
+        if self.button_quit.touched :
+            self.button_quit.sprite = texture.get("quit_default")
+            arcade.exit()
 
     def on_draw(self):
         self.clear()
         self.text.draw()
+        self.button_quit.draw()
 

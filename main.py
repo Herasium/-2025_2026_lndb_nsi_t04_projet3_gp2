@@ -3,6 +3,7 @@ import threading
 from modules.client import Client
 from modules.client.MainMenu import MainMenu
 from modules.client.WaitingMenu import WaitingMenu
+from modules.client.RoleAttributionMenu import RoleAttribution
 
 from modules.server import Server
 from modules.data.loader import Loader
@@ -22,7 +23,7 @@ def main():
     data.client = client
     data.loop = start_async_loop()
 
-    client.display(MainMenu())
+    client.display(RoleAttribution("loup garou"))
     client.run()
 
 def start_async_loop() -> asyncio.AbstractEventLoop:
