@@ -18,7 +18,10 @@ class RoleAttribution(arcade.View):
         self.name = "RoleAttribution"
         self.role = role
 
-        self.text = Text(x=1920/2,y=1080/2,width=500,height=100,text=f"Bravo tu es {role} ! (garde le secret).")
+        self.text = f"Bravo tu es {role} ! (garde le secret)."
+        self.font_size = 10
+        self.max_font_size = 100
+        self.growth_speed = 0.5
         self.button_quit = Entity(1820, 990, 64, 64,texture.get("quit_default"))
 
 
@@ -42,6 +45,19 @@ class RoleAttribution(arcade.View):
 
     def on_draw(self):
         self.clear()
-        self.text.draw()
+        arcade.draw_text(
+            text=self.text,       # On extrait la string de ton objet Text
+            x=1920/2,            # Position X
+            y=1080/2,            # Position Y
+            color=arcade.color.WHITE,
+            font_size=self.font_size,
+            anchor_x="center",         # Arcade attend souvent "center" ou "left" ici
+            anchor_y="center",
+        )
+        
         self.button_quit.draw()
+
+    def on_update(self, delta_time: float):
+        if self.font_size < self.max_font_size:
+            self.font_size += self.growth_speed
 
