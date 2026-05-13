@@ -46,12 +46,12 @@ class RoleAttribution(arcade.View):
     def on_draw(self):
         self.clear()
         arcade.draw_text(
-            text=self.text,       # On extrait la string de ton objet Text
-            x=1920/2,            # Position X
-            y=1080/2,            # Position Y
+            text=self.text,
+            x=1920/2, 
+            y=1080/2,
             color=arcade.color.WHITE,
             font_size=self.font_size,
-            anchor_x="center",         # Arcade attend souvent "center" ou "left" ici
+            anchor_x="center",
             anchor_y="center",
         )
         
