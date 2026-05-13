@@ -37,20 +37,17 @@ Apparition rare
 
 Jules César
 ~~~~~~~~~~~
-WIP
-
-Black Mailer
-~~~~~~~~~~~~
-WIP
+DONE
 
 Mangemort
 ~~~~~~~~~
 Peut ramener une personne a la vie
-WIP
+DONE
 
 Homelander
 ~~~~~~~~~~
 Peut proterger une personne 
+WIP
 
 Necromancien
 ~~~~~~~~~~~~
@@ -58,7 +55,7 @@ Peut parler au mort
 
 Mark Grayson
 ~~~~~~~~~~~~
-WIP
+DONE
 
 Pyromane
 ~~~~~~~~
