@@ -121,22 +121,37 @@ class Game:
         await self.send_all_players_waiting("waiting_room_list_update", {"players": players, "status": self.status})
 
     def get_roles(self):
-        logger.debug("Assigning roles to players.")
-        result = {}
-        per_roles = {}
+            logger.debug("Assigning roles to players using balanced distribution.")
+            
+            player_ids = [pid for pid in self.playing_room if pid in self.players]
+            num_players = len(player_ids)
+            
+            # Calculate number of werewolves (approx 1 for every 4 players, minimum 1)
+            # 3-5 players: 1 wolf | 6-8 players: 2 wolves | 9+ players: 3 wolves
+            num_werewolves = max(1, num_players // 4)
+            if num_players >= 6 and num_werewolves < 2:
+                num_werewolves = 2 # Optional boost for mid-sized games
+                
+            # Create a pool of roles
+            role_pool = (["werewolf"] * num_werewolves) + (["villager"] * (num_players - num_werewolves))
+            
+            # Shuffle the pool so assignment is random
+            random.shuffle(role_pool)
+            
+            result = {}
+            per_roles = {}
 
-        for i in list(self.playing_room):
-            if i in self.players:
-                assigned_role = random.choice(self.roles)
-                result[i] = assigned_role
+            # Assign shuffled roles to player IDs
+            for i, player_id in enumerate(player_ids):
+                assigned_role = role_pool[i]
+                result[player_id] = assigned_role
 
-                if assigned_role in per_roles:
-                    per_roles[assigned_role].append(i)
-                else:
-                    per_roles[assigned_role] = [i]
+                if assigned_role not in per_roles:
+                    per_roles[assigned_role] = []
+                per_roles[assigned_role].append(player_id)
 
-        logger.info(f"Roles assigned: { {role: len(players) for role, players in per_roles.items()} }")
-        return result, per_roles
+            logger.info(f"Balanced roles assigned: { {role: len(p) for role, p in per_roles.items()} }")
+            return result, per_roles
 
     def get_players_by_role(self, role):
         players = []
