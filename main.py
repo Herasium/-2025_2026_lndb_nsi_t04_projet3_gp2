@@ -23,7 +23,7 @@ def main():
     data.client = client
     data.loop = start_async_loop()
 
-    client.display(NightMenu())
+    client.display(MainMenu())
     client.run()
 
 def start_async_loop() -> asyncio.AbstractEventLoop:
