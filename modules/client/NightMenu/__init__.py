@@ -18,7 +18,10 @@ class NightMenu(arcade.View):
         self.name = "NightMenu"
         self.button_quit = Entity(1820, 990, 64, 64,texture.get("quit_default"))
         self.bg = Entity(0,0,1920,1080,texture.get("join_background"))
-        self.text = Text(x=1920/2,y=740,width=500,height=100,text=f"Le village s'endort !!", color=(0,0,0))
+        self.text = f"Le village s'endort !!"
+        self.font_size = 1
+        self.max_font_size = 18
+        self.growth_speed = 0.55
 
 
     @profile
@@ -42,6 +45,19 @@ class NightMenu(arcade.View):
     def on_draw(self):
         self.clear()
         self.bg.draw()
-        self.text.draw()
         self.button_quit.draw()
-
+        arcade.draw_text(
+            text=self.text,
+            x=1920/2, 
+            y=740,
+            color=(0,0,0),
+            font_size=self.font_size,
+            font_name="Press Start 2P",
+            anchor_x="center",
+            anchor_y="center",
+        )
+        
+    
+    def on_update(self, delta_time: float):
+        if self.font_size < self.max_font_size:
+            self.font_size += self.growth_speed
