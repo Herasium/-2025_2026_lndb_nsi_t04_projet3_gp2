@@ -22,8 +22,9 @@ class NightMenu(arcade.View):
         self.sky_bg = Entity(0,0,1920,1080,texture.get("night_sky"))
         self.moon_bg = Entity(0,-1000,1920,1080,texture.get("big_moon"))
         self.text = f"Le village s'endort !!"
+        self.text_y = 740 - 1000
         self.moon_rise_speed = 170
-        self.font_size = 1
+        self.font_size = 18
         self.max_font_size = 18
         self.growth_speed = 0.55
 
@@ -51,25 +52,25 @@ class NightMenu(arcade.View):
         # self.bg.draw()
         self.sky_bg.draw()
         self.moon_bg.draw()
-        self.houses_bg.draw()
-
-        self.button_quit.draw()
         arcade.draw_text(
             text=self.text,
             x=1920/2, 
-            y=740,
+            y=self.text_y,
             color=(0,0,0),
             font_size=self.font_size,
             font_name="Press Start 2P",
             anchor_x="center",
             anchor_y="center",
         )
+        self.houses_bg.draw()
+
+        self.button_quit.draw()
+
         
     
     def on_update(self, delta_time: float):
-        if self.font_size < self.max_font_size:
-            self.font_size += self.growth_speed
-        
         if self.moon_bg.y < 0:
             self.moon_bg.y += self.moon_rise_speed * delta_time
             self.moon_bg.y = min(self.moon_bg.y, 0)
+            self.text_y += self.moon_rise_speed * delta_time
+            self.text_y = min(self.text_y, 740)
