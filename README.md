@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/homescreen/where_wolf.png" width="50%">
+  <img src="assets/readme/where_wolf.png" width="50%" alt="Where Wolf ? title">
 </p>
 
 <h1 align="center">🐺 Where Wolf ?</h1>
@@ -39,13 +39,12 @@ Les joueurs peuvent rejoindre une partie en ligne et interagir en temps réel.
 
 
 
-## 📸 Aperçu  
-Fond du menu principal  
-![Fond principal](assets/readme/homescreen_preview.png)  
-Nuit  
-![Nuit](assets/readme/night_preview.png)  
-Village  
-![Village](assets/readme/village_preview.png)    
+## 📸 Aperçu   
+<p align="center">
+  <img src="assets/readme/homescreen_preview.png" width="50%" alt="Fond du menu principal">
+  <img src="assets/readme/night_preview.png" width="50%" alt="Nuit">
+  <img src="assets/readme/village_preview.png" width="50%" alt="Village">
+</p>
 
 ## ⚙️ Pré-requis
 
