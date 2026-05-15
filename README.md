@@ -37,14 +37,16 @@ Tous les graphismes ont été réalisés par notre équipe dans un style pixel a
 ### 🌐 Un jeu multijoueur
 Les joueurs peuvent rejoindre une partie en ligne et interagir en temps réel.
 
+<details>
+<summary>  <h1>📸 Aperçu  </h1>  </summary>
 
 
-## 📸 Aperçu   
 <p align="center">
   <img src="assets/readme/homescreen_preview.png" width="50%" alt="Fond du menu principal">
   <img src="assets/readme/night_preview.png" width="50%" alt="Nuit">
   <img src="assets/readme/village_preview.png" width="50%" alt="Village">
 </p>
+</details>
 
 ## ⚙️ Pré-requis
 
