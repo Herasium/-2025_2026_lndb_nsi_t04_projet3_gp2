@@ -1,4 +1,4 @@
-![Where Wolf ? title](homescreen/where_wolf.png)
+![Where Wolf ? title](assets/homescreen/where_wolf.png)
 
 # 🐺 Where Wolf ? 
 Projet NSI - n°3  
