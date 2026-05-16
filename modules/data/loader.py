@@ -12,9 +12,9 @@ class Loader:
         # Font
         texture.add("main_background",arcade.Sprite("assets/homescreen/homescreen_v1.png"))
         texture.add("join_background",arcade.Sprite("assets/join_background/server_screen.png"))
-        texture.add("houses_background",arcade.Sprite("assets/join_background/houses_dark.png"))
-        texture.add("night_sky",arcade.Sprite("assets/join_background/night_sky.png"))
-        texture.add("big_moon",arcade.Sprite("assets/join_background/big_moon.png"))
+        texture.add("houses_background",arcade.Sprite("assets/join_background/houses_night.png"))
+        texture.add("night_sky",arcade.Sprite("assets/join_background/sky_night.png"))
+        texture.add("big_moon",arcade.Sprite("assets/join_background/moon.png"))
 
 
 
