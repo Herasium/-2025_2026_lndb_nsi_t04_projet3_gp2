@@ -7,283 +7,359 @@ from textual.containers import VerticalScroll, Vertical, Container
 from textual import work
 
 class WerewolfClient(App):
-    """An intelligent, narrative-driven client for the Werewolf Game."""
-
     CSS = """
-    #main_layout {
-        layout: horizontal;
-        height: 1fr;
-    }
-
-    #left_panel {
-        width: 35%;
-        border-right: tall $primary;
-        padding: 1;
-        background: $surface;
-    }
-
-    #right_panel {
-        width: 65%;
-        padding: 1;
-        background: $boost;
-    }
-
-    .section_container {
-        border: round $accent;
-        margin-bottom: 1;
-        padding: 1;
-        height: auto;
-    }
-
-    .section_label {
-        text-style: bold;
-        color: $secondary;
-        margin-bottom: 1;
-        content-align: center top;
-    }
-
-    Button {
-        margin: 0 1 1 0;
-        width: 100%;
-    }
-
-    .vote_btn {
-        background: $error;
-        color: white;
-        text-style: bold;
-    }
-
-    #log_panel {
-        border: double $primary;
-        height: 1fr;
-        background: #111111;
-        color: #dddddd;
-    }
-
-    Input {
-        margin-bottom: 1;
-    }
-    
-    #action_container {
-        height: 1fr;
-        border: panel $success;
-        padding: 1;
-    }
+    #main_layout { layout: horizontal; height: 1fr; }
+    #left_panel { width: 35%; border-right: tall $primary; padding: 1; background: $surface; }
+    #right_panel { width: 65%; padding: 1; background: $boost; }
+    .section_container { border: round $accent; margin-bottom: 1; padding: 1; height: auto; }
+    .section_label { text-style: bold; color: $secondary; margin-bottom: 1; content-align: center top; }
+    Button { margin: 0 1 1 0; width: 100%; }
+    .vote_btn { background: $error; color: white; text-style: bold; }
+    .special_btn { background: $warning; color: black; text-style: bold; }
+    #chronicle_log { border: double $primary; height: 1fr; background: #0a0a0a; color: #dddddd; }
+    Input { margin-bottom: 1; }
+    #action_container { height: 1fr; border: panel $success; padding: 1; }
     """
 
     def __init__(self):
         super().__init__()
         self.ws = None
-        self.current_vote_opcode = None
-        self.has_joined = False
+        self.connected = False
+        self.player_name = ""
+        self.phase = "waiting"
+        self.my_role = "unknown"
+        self.pending_response_opcode = None
+        self.vote_candidates = []
+        self.alive = True
+        self.lover = None
 
     def compose(self) -> ComposeResult:
         yield Header(show_clock=True)
-        
         with Container(id="main_layout"):
-            # LEFT PANEL: Controls, Joining, and Dynamic Actions
             with Vertical(id="left_panel"):
-                
-                # Connection & Join Section
                 with Vertical(classes="section_container"):
                     yield Label("🌐 CONNECTION & LOBBY", classes="section_label")
                     yield Input(value="ws://localhost:8765", id="ws_url", placeholder="Server URL...")
                     yield Button("Connect", id="connect_btn", variant="success")
-                    
                     yield Input(placeholder="Enter your name...", id="player_name", disabled=True)
                     yield Button("Join Game", id="join_btn", variant="primary", disabled=True)
 
-                # Dynamic Action Section (Populated only when expected by the server)
                 with VerticalScroll(id="action_container"):
                     yield Label("🎮 GAME ACTIONS", classes="section_label")
-                    yield Label("Waiting for game events...", id="action_status")
-
-            # RIGHT PANEL: Narrative Log
+                    yield Label("Waiting for the moon to rise...", id="action_status")
+                    yield VerticalScroll(id="vote_buttons_container")
             with Vertical(id="right_panel"):
                 yield Label("📜 VILLAGE CHRONICLE", classes="section_label")
-                yield RichLog(id="log_panel", markup=True, highlight=True, wrap=True)
-        
-        yield Footer()
+                yield RichLog(id="chronicle_log", wrap=True, highlight=True)
 
-    # --- UI EVENT HANDLERS ---
+    def on_mount(self) -> None:
+        self.set_interval(1, self.update_ui)
+
+    def update_ui(self) -> None:
+        pass
 
     async def on_button_pressed(self, event: Button.Pressed) -> None:
         btn_id = event.button.id
-
         if btn_id == "connect_btn":
-            if self.ws:
-                await self.disconnect()
-            else:
-                url = self.query_one("#ws_url", Input).value
-                self.connect_to_server(url)
-
+            await self.action_connect()
         elif btn_id == "join_btn":
-            name = self.query_one("#player_name", Input).value.strip()
-            if name:
-                await self.send_message("player_join", {"name": name})
-                self.has_joined = True
-                self.query_one("#player_name", Input).disabled = True
-                event.button.disabled = True
-                self.write_log(f"*[italic]You stepped into the village as '{name}'...[/italic]*")
+            await self.action_join()
+        else:
+            await self.handle_vote_button(btn_id)
 
-        elif btn_id and btn_id.startswith("vote_target_"):
-            # Extract the target ID from the button ID
-            target_id = btn_id.replace("vote_target_", "")
-            
-            # Send the vote back using the context-aware opcode (Day or Night)
-            if self.current_vote_opcode:
-                await self.send_message(self.current_vote_opcode, {"vote": target_id})
-                self.write_log("[bold cyan]You have cast your vote.[/bold cyan]")
-                # Immediately clear actions so the user can't vote twice
-                await self.clear_actions()
-                self.query_one("#action_status", Label).update("Vote cast. Waiting for others...")
+    async def handle_vote_button(self, btn_id: str) -> None:
+        if not self.pending_response_opcode or not self.ws:
+            return
+        target = None
+        if btn_id == "vote_skip":
+            target = None
+        elif btn_id == "vote_explode":
+            target = -1
+        elif btn_id.startswith("vote_"):
+            target = btn_id[5:]
+        else:
+            return
 
-    # --- NETWORKING & WORKERS ---
+        response = {}
+        opcode = self.pending_response_opcode
+        if opcode in ("night_werewolf_vote_response", "night_greedy_wolf_response",
+                      "night_black_wolf_vote_response", "night_pyromane_response",
+                      "night_homelander_kill_response", "night_homelander_protect_response",
+                      "mark_grayson_response", "crazy_dave_does_response",
+                      "jules_cesar_vote_response", "day_vote_response",
+                      "night_seer_response", "night_cupid_response",
+                      "night_poisoner_response", "night_death_eater_response"):
+            response["vote"] = target
+        elif opcode == "night_moon_fighter_response":
+            response["skip"] = True if target == "skip" else False
+        elif opcode == "night_witch_response":
+            response["heal"] = target if target != "none" else None
+            response["kill"] = target if target != "none" else None
+        elif opcode == "crazy_dave_response":
+            response["activate"] = True if target == "activate" else False
+        elif opcode == "jules_cesar_decide":
+            response["use"] = True if target == "use" else False
+        elif opcode == "night_cupid_response":
+            response["targets"] = [target, target] if target else []
+        await self.send_server_message(opcode, response)
+        self.pending_response_opcode = None
+        self.query_one("#vote_buttons_container").remove_children()
 
-    @work(exclusive=True)
-    async def connect_to_server(self, url: str) -> None:
-        conn_btn = self.query_one("#connect_btn", Button)
-        join_btn = self.query_one("#join_btn", Button)
-        name_input = self.query_one("#player_name", Input)
-
-        self.write_log(f"[yellow]Journeying to {url}...[/yellow]")
+    async def action_connect(self) -> None:
+        url = self.query_one("#ws_url").value.strip()
+        if not url:
+            self.add_log("⚠️ Please enter a WebSocket server URL.")
+            return
         try:
             self.ws = await websockets.connect(url)
-            self.write_log("[bold green]✅ Arrived at the village gates (Connected).[/bold green]")
-            
-            # Update UI for connection
-            conn_btn.label = "Disconnect"
-            conn_btn.variant = "error"
-            if not self.has_joined:
-                join_btn.disabled = False
-                name_input.disabled = False
-
-            # Listen loop
-            while True:
-                message = await self.ws.recv()
-                await self.handle_server_message(json.loads(message))
-
+            self.connected = True
+            self.add_log("🌙 Connection to the village established...")
+            self.query_one("#player_name").disabled = False
+            self.query_one("#join_btn").disabled = False
+            asyncio.create_task(self.message_listener())
         except Exception as e:
-            self.write_log(f"[bold red]❌ The path is blocked (Error):[/bold red] {e}")
-        finally:
-            self.ws = None
-            conn_btn.label = "Connect"
-            conn_btn.variant = "success"
-            join_btn.disabled = True
-            name_input.disabled = True
-            self.has_joined = False
-            self.write_log("[yellow]You have left the village (Disconnected).[/yellow]")
+            self.add_log(f"❌ Connection failed: {e}")
 
-    async def disconnect(self):
-        if self.ws:
-            await self.ws.close()
-        
-    async def send_message(self, opcode: str, data: dict):
-        if self.ws:
-            payload = json.dumps({"opcode": opcode, "data": data})
-            await self.ws.send(payload)
+    async def action_join(self) -> None:
+        name = self.query_one("#player_name").value.strip()
+        if not name:
+            self.add_log("⚠️ Enter your name before joining.")
+            return
+        self.player_name = name
+        await self.send_server_message("player_join", {"name": name})
+        self.add_log(f"✨ {name} enters the village waiting room.")
 
-    # --- GAME LOGIC & NARRATIVE INTERPRETER ---
+    async def send_server_message(self, opcode: str, data: dict) -> None:
+        if not self.ws:
+            return
+        try:
+            message = json.dumps({"opcode": opcode, "data": data})
+            await self.ws.send(message)
+        except Exception as e:
+            self.add_log(f"❌ Failed to send message: {e}")
 
-    async def handle_server_message(self, msg: dict):
-        opcode = msg.get("opcode")
-        data = msg.get("data", {})
-        
-        # Lobby updates
+    def add_log(self, message: str) -> None:
+        try:
+            self.query_one("#chronicle_log").write(message)
+        except Exception:
+            pass
+
+    async def message_listener(self) -> None:
+        while self.connected:
+            try:
+                msg = await self.ws.recv()
+                data = json.loads(msg)
+                await self.handle_message(data["opcode"], data.get("data", {}))
+            except websockets.ConnectionClosed:
+                self.add_log("💔 Connection to the village lost.")
+                self.connected = False
+                break
+            except Exception as e:
+                self.add_log(f"⚠️ Error: {e}")
+
+    async def handle_message(self, opcode: str, data: dict) -> None:
         if opcode == "waiting_room_list_update":
             players = data.get("players", [])
-            names = [p.get("name", "Unknown") for p in players]
-            self.write_log(f"👥 [blue]The town square gathers:[/blue] {len(players)} souls present. ({', '.join(names)})")
-
-        # Game Initializing
+            status = data.get("status", 0)
+            names = [p["name"] for p in players]
+            self.add_log(f"🏠 Waiting room ({len(names)}): {', '.join(names)}")
+            self.query_one("#action_status").update("Waiting for players...")
         elif opcode == "game_start_soon":
-            self.write_log("\n[bold magenta]⏳ A chilling wind blows... The game begins in 10 seconds![/bold magenta]\n")
-            await self.clear_actions()
-
+            self.add_log("🔮 Game will start soon! The roles are being assigned...")
+            self.query_one("#action_status").update("Game starting...")
         elif opcode == "player_role":
-            role = data.get("role", "unknown")
-            role_color = "bold red" if role == "werewolf" else "bold green"
-            self.write_log(f"🎭 [bold]SECRET ROLE:[/bold] You are a [{role_color}]{role.upper()}[/{role_color}]!")
-
-        # Night Phase
+            self.my_role = data["role"]
+            self.add_log(f"🎭 Your secret role: {self.my_role.upper()}")
+            self.query_one("#action_status").update(f"You are {self.my_role}")
         elif opcode == "switch_night":
-            self.write_log("\n[bold blue]🌙 The sun sets. The village goes to sleep. Close your eyes...[/bold blue]")
-            await self.clear_actions()
-            self.query_one("#action_status", Label).update("The village is asleep...")
-
-        elif opcode == "night_werewolf_start":
-            self.write_log("🐺 [bold red]WEREWOLVES WAKE UP.[/bold red] Time to hunt.")
-
-        elif opcode == "night_werewolf_vote":
-            self.write_log("🩸 [italic red]Who shall be your prey tonight?[/italic red]")
-            await self.show_vote_buttons(data.get("villagers", []), "night_werewolf_vote_response")
-
-        elif opcode == "night_werewolf_end":
-            self.write_log("💤 [italic]The blood is washed away. Return to sleep.[/italic]")
-            await self.clear_actions()
-
-        # Day Phase
+            night_num = data.get("current_night", 0)
+            self.phase = "night"
+            self.add_log(f"🌜 Night {night_num} falls upon the village... The creatures stir.")
+            self.query_one("#action_status").update("Night phase")
         elif opcode == "switch_day":
             day = data.get("current_day", 0)
-            self.write_log(f"\n[bold yellow]☀️ Day {day} breaks! The village wakes up.[/bold yellow]")
-            await self.clear_actions()
-
+            self.phase = "day"
+            self.add_log(f"☀️ Day {day} breaks. The survivors gather to accuse.")
+            self.query_one("#action_status").update("Day phase")
+        elif opcode == "night_seer_start":
+            self.add_log("🔮 The Seer closes their eyes and reaches out to the spirits...")
+        elif opcode == "night_seer_vote":
+            self.prepare_vote("night_seer_response", data.get("villagers", []), "Choose a villager to see their role")
+        elif opcode == "night_seer_result":
+            target = data.get("target")
+            role = data.get("role")
+            self.add_log(f"🔮 The spirits whisper: {target} is a {role}.")
+        elif opcode == "night_seer_end":
+            self.add_log("🔮 The Seer opens their eyes.")
+        elif opcode == "night_cupid_start":
+            self.add_log("💘 Cupid readies their bow...")
+        elif opcode == "night_cupid_vote":
+            self.prepare_vote("night_cupid_response", data.get("villagers", []), "Select two villagers to bind (pick first target)")
+        elif opcode == "night_cupid_end":
+            self.add_log("💘 Cupid's arrows have flown.")
+        elif opcode == "you_are_lovers":
+            self.add_log("💕 You are now bound by love. If one lover dies, the other follows.")
+        elif opcode == "night_poisoner_start":
+            self.add_log("🧪 The Poisoner mixes a deadly brew...")
+        elif opcode == "night_poisoner_vote":
+            self.prepare_vote("night_poisoner_response", data.get("villagers", []), "Choose a victim to poison (takes effect next day)")
+        elif opcode == "night_poisoner_end":
+            self.add_log("🧪 The Poisoner puts away the vials.")
+        elif opcode == "poisoned_blocked":
+            self.add_log("🤢 You feel too weak to vote today... the poison courses through your veins.")
+        elif opcode == "night_necromancer_start":
+            self.add_log("☠️ The Necromancer communes with the dead...")
+        elif opcode == "night_necromancer_info":
+            dead = data.get("dead_players", [])
+            names = [f"{p['name']} ({p['role']})" for p in dead]
+            self.add_log(f"☠️ The dead whisper: {', '.join(names) if names else 'No dead yet.'}")
+        elif opcode == "night_necromancer_end":
+            self.add_log("☠️ The Necromancer's ritual ends.")
+        elif opcode == "homelander_psycho_mode":
+            self.add_log("🔥 Homelander's mind snaps! They can now kill.")
+        elif opcode == "night_homelander_start":
+            self.add_log("🛡️ Homelander decides who to protect or eliminate...")
+        elif opcode == "night_homelander_protect_vote":
+            self.prepare_vote("night_homelander_protect_response", data.get("villagers", []), "Choose a villager to protect")
+        elif opcode == "night_homelander_kill_vote":
+            self.prepare_vote("night_homelander_kill_response", data.get("villagers", []), "Choose a villager to kill (psycho mode)")
+        elif opcode == "night_homelander_end":
+            self.add_log("🛡️ Homelander's action is set.")
+        elif opcode == "night_werewolf_start":
+            self.add_log("🐺 The werewolves gather under the moon...")
+        elif opcode == "night_werewolf_vote":
+            self.prepare_vote("night_werewolf_vote_response", data.get("villagers", []), "Choose a victim to devour")
+        elif opcode == "night_werewolf_end":
+            self.add_log("🐺 The pack retreats.")
+        elif opcode == "night_greedy_wolf_start":
+            self.add_log("🍖 The Greedy Wolf hungers for an extra kill...")
+        elif opcode == "night_greedy_wolf_vote":
+            self.prepare_vote("night_greedy_wolf_response", data.get("villagers", []), "Choose a second victim")
+        elif opcode == "night_greedy_wolf_end":
+            self.add_log("🍖 Greedy Wolf is satisfied.")
+        elif opcode == "night_black_wolfs_start":
+            self.add_log("🖤 The Black Wolf prepares to convert the victim...")
+        elif opcode == "night_black_wolf_vote":
+            info = data.get("villager", {})
+            self.prepare_vote("night_black_wolf_vote_response", [info], "Do you want to consume this villager's identity?")
+        elif opcode == "night_black_wolf_end":
+            self.add_log("🖤 The Black Wolf's jaws close.")
+        elif opcode == "role_change":
+            new_role = data.get("new_role")
+            self.my_role = new_role
+            self.add_log(f"🔄 Your role has changed! You are now {new_role}.")
+        elif opcode == "night_witch_start":
+            self.add_log("🧙 The Witch brews two potions...")
+        elif opcode == "night_witch_vote":
+            victims = data.get("victims", [])
+            villagers = data.get("villagers", [])
+            self.add_log("🧙 Choose to heal someone marked for death or poison a villager.")
+            self.prepare_vote("night_witch_response", villagers, f"Victims: {[v['name'] for v in victims]}. Tap a villager to heal/kill.")
+        elif opcode == "night_witch_end":
+            self.add_log("🧙 The Witch's cauldron settles.")
+        elif opcode == "night_death_eater_start":
+            self.add_log("💀 The Death Eater reaches for a fallen soul...")
+        elif opcode == "night_death_eater_vote":
+            self.prepare_vote("night_death_eater_response", data.get("dead", []), "Choose a dead player to resurrect")
+        elif opcode == "night_death_eater_end":
+            self.add_log("💀 The Death Eater's hand fades.")
+        elif opcode == "player_revived":
+            name = data.get("name")
+            self.add_log(f"✨ {name} has been resurrected!")
+        elif opcode == "night_moon_fighter_vote":
+            self.prepare_vote("night_moon_fighter_response", [{"id": "skip", "name": "Skip the night"}, {"id": "continue", "name": "Continue night"}],
+                              "Do you want to skip the entire night?")
+        elif opcode == "night_moon_fighter_response":
+            self.add_log("🌕 Moon Fighter makes a choice.")
+        elif opcode == "night_pyromane_start":
+            self.add_log("🔥 The Pyromane collects fuel...")
+        elif opcode == "night_pyromane_vote":
+            villagers = data.get("villagers", [])
+            self.add_log("🔥 Choose a villager to douse, or press EXPLODE to ignite all doused.")
+            self.prepare_vote("night_pyromane_response", villagers, "Douse or EXPLODE")
+        elif opcode == "pyromane_explosion":
+            self.add_log("💥 KABOOM! The Pyromane's bombs explode!")
+        elif opcode == "night_pyromane_end":
+            self.add_log("🔥 The Pyromane rests.")
+        elif opcode == "mark_grayson_died":
+            self.add_log("⚡ Mark Grayson has been killed! Their final vengeance begins...")
+        elif opcode == "mark_grayson_vote":
+            self.prepare_vote("mark_grayson_response", data.get("villagers", []), "Choose a victim for your dying wrath")
+        elif opcode == "killed":
+            self.alive = False
+            self.add_log("💀 You have been killed. You wander the death room now.")
+            self.query_one("#action_status").update("Dead")
         elif opcode == "day_death":
             deaths = data.get("death", [])
-            if not deaths:
-                self.write_log("🕊️ [green]A peaceful morning. Nobody died last night![/green]")
-            else:
-                for d in deaths:
-                    self.write_log(f"💀 [bold red]TRAGEDY![/bold red] [bold]{d['name']}[/bold] was found torn apart! They were a {d['role']}.")
-
+            for d in deaths:
+                self.add_log(f"⚰️ {d['name']} ({d['role']}) has died.")
         elif opcode == "day_vote":
-            self.write_log("⚖️ [bold]The town gathers. Who is the Werewolf among you?[/bold]")
-            await self.show_vote_buttons(data.get("villagers", []), "day_vote_response")
-
-        # End states
-        elif opcode == "killed":
-            self.write_log("\n🪦 [bold red]YOU HAVE BEEN KILLED.[/bold red] You are now a ghost. You may watch, but you cannot speak.")
-            await self.clear_actions()
-            self.query_one("#action_status", Label).update("You are dead.")
-
+            villagers = data.get("villagers", [])
+            self.prepare_vote("day_vote_response", villagers, "Vote for a villager to be executed")
+        elif opcode == "day_jules_cesar_prompt":
+            self.prepare_vote("jules_cesar_decide", [{"id": "use", "name": "Use power"}, {"id": "skip", "name": "Skip"}],
+                              "Do you want to use your imperial authority?")
+        elif opcode == "jules_cesar_took_vote":
+            self.add_log(f"👑 Jules César takes the vote!")
+        elif opcode == "jules_cesar_vote":
+            self.prepare_vote("jules_cesar_vote_response", data.get("villagers", []), "Choose the target of your imperial judgement")
+        elif opcode == "jules_cesar_success":
+            mayor = data.get("mayor")
+            executed = data.get("executed")
+            self.add_log(f"👑 César's verdict: {executed} is a werewolf and is executed!")
+        elif opcode == "jules_cesar_failed":
+            executed = data.get("executed")
+            self.add_log(f"👑 César's error: {executed} was innocent. César is executed instead.")
+        elif opcode == "crazy_dave_vote":
+            self.prepare_vote("crazy_dave_response", [{"id": "activate", "name": "Activate"}, {"id": "skip", "name": "Skip"}],
+                              "Do you want to trigger your time-bending ability?")
+        elif opcode == "crazy_dave_up":
+            self.add_log("🌀 Crazy Dave warps time! Days and nights blur...")
+        elif opcode == "crazy_dave_does":
+            self.add_log("🌀 Crazy Dave's chaos unfolds...")
+        elif opcode == "crazy_dave_does_vote":
+            self.prepare_vote("crazy_dave_does_response", data.get("villagers", []), "Choose a victim to erase from time")
         elif opcode == "game_end":
-            winner = data.get("winner", "nobody")
-            win_color = "bold red" if winner == "werewolf" else "bold green"
-            self.write_log(f"\n🏆 [bold yellow]THE GAME IS OVER![/bold yellow] The [{win_color}]{winner.upper()}S[/{win_color}] have won!")
-            await self.clear_actions()
-
+            winner = data.get("winner")
+            self.add_log(f"🏆 The game is over! The {winner} win!")
+            self.query_one("#action_status").update("Game ended")
+            self.pending_response_opcode = None
+            self.query("#vote_buttons_container").remove_children()
         elif opcode == "back_to_waiting":
-            self.write_log("\n🔙 Returning to the lobby...")
+            self.add_log("🔁 Returning to the waiting room...")
+            self.phase = "waiting"
+            self.my_role = "unknown"
+            self.alive = True
+            self.lover = None
+            self.query_one("#action_status").update("In waiting room")
 
-    # --- UI HELPER METHODS ---
+    def prepare_vote(self, response_opcode: str, candidates: list, instruction: str) -> None:
+        self.pending_response_opcode = response_opcode
+        self.vote_candidates = candidates
+        container = self.query_one("#vote_buttons_container")
+        container.remove_children()
+        self.add_log(f"🗳️ {instruction}")
+        self.query_one("#action_status").update(instruction)
 
-    def write_log(self, text: str):
-        """Safely write to the log panel."""
-        log = self.query_one("#log_panel", RichLog)
-        log.write(text)
+        if response_opcode in ("night_pyromane_response",):
+            explode_btn = Button("💥 EXPLODE", id="vote_explode", variant="error")
+            container.mount(explode_btn)
+        if response_opcode in ("night_moon_fighter_response",):
+            for c in candidates:
+                btn = Button(c["name"], id=f"vote_{c['id']}", variant="primary")
+                container.mount(btn)
+            return
+        if response_opcode in ("jules_cesar_decide", "crazy_dave_response"):
+            for c in candidates:
+                btn = Button(c["name"], id=f"vote_{c['id']}", variant="warning")
+                container.mount(btn)
+            return
 
-    async def clear_actions(self):
-        """Removes all dynamic vote buttons."""
-        actions_container = self.query_one("#action_container")
-        self.current_vote_opcode = None
-        # Remove any existing buttons
-        for btn in actions_container.query(Button):
-            btn.remove()
-        
-    async def show_vote_buttons(self, targets: list, response_opcode: str):
-        """Dynamically generates buttons only for valid voting targets."""
-        await self.clear_actions()
-        actions_container = self.query_one("#action_container")
-        status_label = self.query_one("#action_status", Label)
-        
-        self.current_vote_opcode = response_opcode
-        status_label.update("Select a target below:")
-
-        for t in targets:
-            # We don't render buttons for ourselves if we know our ID, 
-            # but the server provides the list.
-            btn_id = f"vote_target_{t['id']}"
-            await actions_container.mount(Button(f"Vote: {t['name']}", id=btn_id, classes="vote_btn"))
+        for c in candidates:
+            btn = Button(c["name"], id=f"vote_{c['id']}", variant="primary")
+            container.mount(btn)
+        skip_btn = Button("Skip", id="vote_skip", variant="default")
+        container.mount(skip_btn)
 
 if __name__ == "__main__":
     app = WerewolfClient()
