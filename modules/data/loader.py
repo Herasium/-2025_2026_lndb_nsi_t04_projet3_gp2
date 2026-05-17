@@ -12,6 +12,12 @@ class Loader:
         # Font
         texture.add("main_background",arcade.Sprite("assets/homescreen/homescreen_v1.png"))
         texture.add("join_background",arcade.Sprite("assets/join_background/server_screen.png"))
+        texture.add("houses_background",arcade.Sprite("assets/join_background/houses_night.png"))
+        texture.add("night_sky",arcade.Sprite("assets/join_background/sky_night.png"))
+        texture.add("big_moon",arcade.Sprite("assets/join_background/moon.png"))
+
+
+
 
         # MainMenu
         texture.add("join_default",arcade.Sprite("assets/buttons/join_default.png"))
@@ -38,6 +44,28 @@ class Loader:
         texture.add("add_default",arcade.Sprite("assets/buttons/add_default.png"))
         texture.add("add_click",arcade.Sprite("assets/buttons/add_click.png"))
         texture.add("add_hover",arcade.Sprite("assets/buttons/add_hover.png"))
+
+        # Load bars
+        texture.add("load_bar00",arcade.Sprite("assets/load_bars/load_bar00.png"))
+        texture.add("load_bar01",arcade.Sprite("assets/load_bars/load_bar01.png"))
+        texture.add("load_bar02",arcade.Sprite("assets/load_bars/load_bar02.png"))
+        texture.add("load_bar03",arcade.Sprite("assets/load_bars/load_bar03.png"))
+        texture.add("load_bar04",arcade.Sprite("assets/load_bars/load_bar04.png"))
+        texture.add("load_bar05",arcade.Sprite("assets/load_bars/load_bar05.png"))
+        texture.add("load_bar06",arcade.Sprite("assets/load_bars/load_bar06.png"))
+        texture.add("load_bar07",arcade.Sprite("assets/load_bars/load_bar07.png"))
+        texture.add("load_bar08",arcade.Sprite("assets/load_bars/load_bar08.png"))
+        texture.add("load_bar09",arcade.Sprite("assets/load_bars/load_bar09.png"))
+        texture.add("load_bar10",arcade.Sprite("assets/load_bars/load_bar10.png"))
+        texture.add("load_bar11",arcade.Sprite("assets/load_bars/load_bar11.png"))
+        texture.add("load_bar12",arcade.Sprite("assets/load_bars/load_bar12.png"))
+        texture.add("load_bar13",arcade.Sprite("assets/load_bars/load_bar13.png"))
+        texture.add("load_bar14",arcade.Sprite("assets/load_bars/load_bar14.png"))
+        texture.add("load_bar15",arcade.Sprite("assets/load_bars/load_bar15.png"))
+        texture.add("load_bar16",arcade.Sprite("assets/load_bars/load_bar16.png"))
+        texture.add("load_bar17",arcade.Sprite("assets/load_bars/load_bar17.png"))
+        texture.add("load_bar18",arcade.Sprite("assets/load_bars/load_bar18.png"))
+        texture.add("load_bar19",arcade.Sprite("assets/load_bars/load_bar19.png"))
 
     def load(self):
         self.load_images()
