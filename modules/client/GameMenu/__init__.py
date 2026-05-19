@@ -10,7 +10,7 @@ import arcade
 import traceback
 from modules.client.WaitingMenu import WaitingMenu
 from modules.client.NewserverMenu import NewserverMenu
-from modules.client.orchestator import Orchestator
+from modules.client.orchestrator import Orchestrator
 
 
 
@@ -153,7 +153,7 @@ class GameMenu(arcade.View):
             if button.touched and server["status"] == 2:
                 button.sprite = texture.get("server_case_default")
                 #Server Connection
-                orc = Orchestator(ip)
+                orc = Orchestrator(ip)
                 asyncio.run_coroutine_threadsafe(orc.run(),data.loop)         
 
 

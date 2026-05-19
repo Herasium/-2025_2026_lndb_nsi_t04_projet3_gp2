@@ -21,6 +21,7 @@ class Client:
         )
 
         data.client = self
+        multiprocessing.set_start_method('spawn', force=True)
         
     async def get_server_informations(self,ip,name):
         rx_queue = multiprocessing.Queue()
@@ -30,12 +31,12 @@ class Client:
         message = json.dumps({"opcode":"server_info","data":{}})
         tx_queue.put(message)
 
-        self.conn_obj = Connection(f"ws://{ip}:8765", rx_queue, tx_queue,dead)
-        self.network_process = multiprocessing.Process(
-            target=self.conn_obj.start, 
+        conn_obj = Connection(f"ws://{ip}:8765", rx_queue, tx_queue,dead)
+        network_process = multiprocessing.Process(
+            target=conn_obj.start, 
             daemon=True
         )
-        self.network_process.start()
+        network_process.start()
 
         loop = asyncio.get_running_loop()
 
@@ -47,9 +48,9 @@ class Client:
         except queue.Empty:
             raw_msg = None
 
-        if self.network_process.is_alive():
-            self.network_process.terminate()
-            self.network_process.join()
+        if network_process.is_alive():
+            network_process.terminate()
+            network_process.join()
         
         if raw_msg is None:
             return {"nom":name,"nombre":0,"max":-1,"status":0}
@@ -64,14 +65,13 @@ class Client:
         self.rx_queue = multiprocessing.Queue()
         self.tx_queue = multiprocessing.Queue()
         self.dead_connection = multiprocessing.Value("i",0)
-
-        self.conn_obj = Connection(f"ws://{ip}:8765", self.rx_queue, self.tx_queue, self.dead_connection)
+        print("coonnect",ip)
         self.network_process = multiprocessing.Process(
-            target=self.conn_obj.start, 
-            daemon=True
-        )
+                target=run_connection_worker, 
+                args=(f"ws://{ip}:8765", self.rx_queue, self.tx_queue, self.dead_connection),
+                daemon=True
+            )
         self.network_process.start()
-
 
 
     def display(self, view: arcade.View) -> None:
@@ -81,4 +81,7 @@ class Client:
     def run(self):
         arcade.run()
 
-        
+def run_connection_worker(ip,rx,tx,dead):
+    conn_obj = Connection(ip,rx,tx,dead)
+    print(ip,"fopj")
+    conn_obj.start()

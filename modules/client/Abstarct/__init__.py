@@ -1,0 +1,185 @@
+import arcade
+from modules.client.toolbox.entity import Entity
+from modules.client.toolbox.text import Text
+from modules.data import texture, data
+from modules.client.mouse import mouse
+
+class BaseGameMenu(arcade.View):
+    """Classe de base fournissant l'arrière-plan et le bouton de fermeture sécurisé."""
+    def __init__(self, menu_name):
+        super().__init__()
+        self.name = menu_name
+        self.background_color = arcade.color.BLACK
+        self.bg = Entity(0, 0, 1920, 1080, texture.get("join_background"))
+        self.button_quit = Entity(1820, 990, 64, 64, texture.get("quit_default"))
+        self.title_text = Text(x=1920/2, y=900, width=1000, height=80, text="")
+        self.subtitle_text = Text(x=1920/2, y=820, width=1000, height=50, text="")
+
+    def on_mouse_motion(self, x: float, y: float, delta_x: float, delta_y: float):
+        mouse.position = (x, y)
+
+    def on_mouse_press(self, x: float, y: float, buttons: int, modifier: int):
+        if self.button_quit.touched:
+            self.button_quit.sprite = texture.get("quit_click")
+
+    def on_mouse_release(self, x: float, y: float, buttons: int, modifier: int):
+        if self.button_quit.touched:
+            self.button_quit.sprite = texture.get("quit_default")
+            arcade.exit()
+
+    def on_draw(self):
+        self.clear()
+        if self.bg: self.bg.draw()
+        self.title_text.draw()
+        self.subtitle_text.draw()
+        self.button_quit.draw()
+
+
+class WaitingMenu(BaseGameMenu):
+    def __init__(self):
+        super().__init__("WaitingMenu")
+        self.players_text = Text(x=1920/2, y=500, width=800, height=400, text="")
+
+    def run(self, state, payload):
+        self.title_text.text = "SALON D'ATTENTE"
+        status = payload.get("status", 0)
+        self.subtitle_text.text = "En attente du lancement par l'hôte..." if status == 0 else "La partie va commencer !"
+        
+        players = payload.get("players", [])
+        names = [p["name"] for p in players]
+        self.players_text.text = "Joueurs présents :\n" + ", ".join(names)
+
+    def on_draw(self):
+        super().on_draw()
+        self.players_text.draw()
+
+
+class RoleAttribution(BaseGameMenu):
+    def __init__(self):
+        super().__init__("RoleAttribution")
+        self.role_display = Text(x=1920/2, y=540, width=800, height=100, text="")
+
+    def run(self, state, payload):
+        self.title_text.text = "ATTRIBUTION DES RÔLES"
+        self.subtitle_text.text = "Découvrez votre identité secrète pour cette partie."
+        new_role = payload.get("role", "Inconnu").upper()
+        self.role_display.text = f"VOTRE RÔLE : {new_role}"
+
+    def on_draw(self):
+        super().on_draw()
+        self.role_display.draw()
+
+
+class NightMenu(BaseGameMenu):
+    def __init__(self):
+        super().__init__("NightMenu")
+
+    def run(self, state, payload):
+        num = payload.get("current_night", 1)
+        self.title_text.text = f"NUIT N°{num}"
+        self.subtitle_text.text = "Le village s'endort... Fermez les yeux."
+
+
+class DayMenu(BaseGameMenu):
+    def __init__(self):
+        super().__init__("DayMenu")
+
+    def run(self, state, payload):
+        num = payload.get("current_day", 1)
+        self.title_text.text = f"JOUR N°{num}"
+        self.subtitle_text.text = "Le village se réveille... Qui a survécu ?"
+
+
+class KilledMenu(BaseGameMenu):
+    def __init__(self):
+        super().__init__("KilledMenu")
+
+    def run(self, state, payload):
+        self.title_text.text = "VOUS AVEZ ÉTÉ TUÉ"
+        self.subtitle_text.text = "Vous rejoignez le cimetière. Les morts ne parlent pas."
+
+
+class AliveMenu(BaseGameMenu):
+    def __init__(self):
+        super().__init__("AliveMenu")
+
+    def run(self, state, payload):
+        self.title_text.text = "RÉSURRECTION !"
+        self.subtitle_text.text = "Les forces mystiques vous ramènent à la vie parmi les vivants."
+
+
+class DayDeath(BaseGameMenu):
+    def __init__(self):
+        super().__init__("DayDeath")
+        self.deaths_text = Text(x=1920/2, y=500, width=800, height=400, text="")
+
+    def run(self, state, payload):
+        self.title_text.text = "RAPPORT DES MORTS"
+        deaths = payload.get("death", [])
+        if not deaths:
+            self.subtitle_text.text = "Bonne nouvelle : Personne n'est mort cette nuit !"
+            self.deaths_text.text = ""
+        else:
+            self.subtitle_text.text = "Le réveil est brutal..."
+            lines = [f"• {d['name']} (Rôle: {d['role']})" for d in deaths]
+            self.deaths_text.text = "\n".join(lines)
+
+    def on_draw(self):
+        super().on_draw()
+        self.deaths_text.draw()
+
+
+class GameEndMenu(BaseGameMenu):
+    def __init__(self):
+        super().__init__("GameEndMenu")
+
+    def run(self, state, payload):
+        winner = payload.get("winner", "Personne").upper()
+        self.title_text.text = "FIN DE LA PARTIE"
+        self.subtitle_text.text = f"VICTOIRE DE LA FACTION : {winner} !"
+
+class AbstractVotingMenu(BaseGameMenu):
+    """Moteur générique de rendu pour les choix ciblés sur des listes de joueurs."""
+    def __init__(self, menu_name):
+        super().__init__(menu_name)
+        self.choices = []
+        self.buttons = []
+        self.callback = None
+
+    def _build_grid(self, villagers):
+        self.choices = villagers
+        self.buttons.clear()
+        
+        w, h, gap_x, gap_y = 220, 80, 40, 30
+        max_cols = 5
+        total = len(villagers)
+        if total == 0: return
+        
+        cols = min(total, max_cols)
+        for idx, item in enumerate(villagers):
+            c = idx % cols
+            r = idx // cols
+            current_row_count = cols if (r < total // cols) else (total % cols)
+            row_w = (current_row_count * w) + ((current_row_count - 1) * gap_x)
+            
+            x = (1920 / 2) - (row_w / 2) + (c * (w + gap_x)) + (w / 2)
+            y = 550 - (r * (h + gap_y))
+            
+            btn = Text(x=x, y=y, width=w, height=h, text=f"{item['name']}")
+            self.buttons.append(btn)
+
+    def on_mouse_motion(self, x: float, y: float, delta_x: float, delta_y: float):
+        super().on_mouse_motion(x, y, delta_x, delta_y)
+
+    def on_mouse_press(self, x: float, y: float, buttons: int, modifier: int):
+        super().on_mouse_press(x, y, buttons, modifier)
+        if self.callback:
+            for idx, btn in enumerate(self.buttons):
+                if btn.touched:
+                    self.callback(self.choices[idx])
+                    break
+
+    def on_draw(self):
+        super().on_draw()
+        for btn in self.buttons:
+            btn.draw()

@@ -4,6 +4,7 @@ import multiprocessing
 import contextlib
 import queue
 import os
+import time
 
 
 
@@ -18,19 +19,22 @@ class Connection:
         try:
             async for msg in websocket:
                 self.rx_queue.put(msg)
-        except Exception:
+        except Exception as e:
             self.dead.value = 1
-            print("dead")
+            print(f"dead, {e}")
             raise Exception("Dead")
 
     async def send_loop(self, websocket):
         try:
             while True:
-                to_send = await asyncio.to_thread(self.tx_queue.get)
-                await websocket.send(to_send)
-        except Exception:
+                try:
+                    to_send = self.tx_queue.get_nowait()
+                    await websocket.send(to_send)
+                except queue.Empty:
+                    await asyncio.sleep(0.05)
+        except Exception as e:
             self.dead.value = 1
-            print("dead")
+            print(f"dead, {e}")
             raise Exception("Dead")
 
 
@@ -44,6 +48,7 @@ class Connection:
             )
 
             for t in pending:
+                print(f"Canceled  {time.time()}")
                 t.cancel()
                 with contextlib.suppress(Exception):
                     await t
@@ -51,5 +56,3 @@ class Connection:
     def start(self):
         print(self.url)
         asyncio.run(self.run_async())
-
-
