@@ -15,6 +15,9 @@ class Loader:
         texture.add("houses_background",arcade.Sprite("assets/join_background/houses_night.png"))
         texture.add("night_sky",arcade.Sprite("assets/join_background/sky_night.png"))
         texture.add("big_moon",arcade.Sprite("assets/join_background/moon.png"))
+        texture.add("houses_background_day",arcade.Sprite("assets/join_background/houses_day.png"))
+        texture.add("day_sky",arcade.Sprite("assets/join_background/sky_day.png"))
+        texture.add("sun",arcade.Sprite("assets/join_background/sun.png"))
 
 
 

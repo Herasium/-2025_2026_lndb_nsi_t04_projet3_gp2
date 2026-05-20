@@ -101,7 +101,7 @@ class NightMenu(BaseGameMenu):
         self.button_quit.draw()
 
         
-    
+
     def on_update(self, delta_time: float):
         if self.moon_bg.y < 0:
             self.moon_bg.y += self.moon_rise_speed * delta_time
@@ -113,11 +113,35 @@ class NightMenu(BaseGameMenu):
 class DayMenu(BaseGameMenu):
     def __init__(self):
         super().__init__("DayMenu")
+        self.text_y = 740 - 1000
+        self.sun_rise_speed = 170
+        self.houses_bg_day = Entity(0,0,1920,1080,texture.get("houses_background_day"))
+        self.sky_bg_day = Entity(0,0,1920,1080,texture.get("day_sky"))
+        self.sun_bg = Entity(0,-700,1920,1080,texture.get("sun"))
 
     def run(self, state, payload):
         num = payload.get("current_day", 1)
         self.title_text.text = f"JOUR N°{num}"
         self.subtitle_text.text = "Le village se réveille... Qui a survécu ?"
+
+    def on_draw(self):
+        self.clear()
+        # self.bg.draw()
+        self.sky_bg_day.draw()
+        self.sun_bg.draw()
+        self.subtitle_text.draw()
+        self.title_text.draw()
+        self.houses_bg_day.draw()
+
+        self.button_quit.draw()
+
+    def on_update(self, delta_time: float):
+        if self.sun_bg.y < 0:
+            self.sun_bg.y += self.sun_rise_speed * delta_time
+            self.sun_bg.y = min(self.sun_bg.y, 0)
+            self.text_y += self.sun_rise_speed * delta_time
+            self.text_y = min(self.text_y, 740)
+            self.subtitle_text.y = self.text_y
 
 
 class KilledMenu(BaseGameMenu):
