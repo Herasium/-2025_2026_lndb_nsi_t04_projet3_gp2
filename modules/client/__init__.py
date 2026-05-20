@@ -21,6 +21,7 @@ class Client:
         )
 
         data.client = self
+        self.network_process = None
         multiprocessing.set_start_method('spawn', force=True)
         
     async def get_server_informations(self,ip,name):
@@ -62,6 +63,8 @@ class Client:
             return {"nom":name,"nombre":0,"max":-1,"status":0}
 
     def connect(self,ip):
+        if self.network_process != None:
+            return 
         self.rx_queue = multiprocessing.Queue()
         self.tx_queue = multiprocessing.Queue()
         self.dead_connection = multiprocessing.Value("i",0)
