@@ -30,6 +30,8 @@ class MainMenu(arcade.View):
             font_size=18,
             font_name="Press Start 2P"
         )
+
+        data.main_menu = MainMenu
     @profile
     def on_mouse_motion(
         self, x: float, y: float, delta_x: float, delta_y: float

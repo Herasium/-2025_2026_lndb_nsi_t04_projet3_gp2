@@ -21,20 +21,21 @@ class Connection:
                 self.rx_queue.put(msg)
         except Exception as e:
             self.dead.value = 1
-            print(f"dead, {e}")
+
             raise Exception("Dead")
 
     async def send_loop(self, websocket):
         try:
-            while True:
+            while self.dead.value == 0:
                 try:
                     to_send = self.tx_queue.get_nowait()
                     await websocket.send(to_send)
                 except queue.Empty:
                     await asyncio.sleep(0.05)
+            raise Exception("Dead (per command)")
         except Exception as e:
             self.dead.value = 1
-            print(f"dead, {e}")
+
             raise Exception("Dead")
 
 
@@ -48,11 +49,12 @@ class Connection:
             )
 
             for t in pending:
-                print(f"Canceled  {time.time()}")
+
+                websocket.close()
                 t.cancel()
                 with contextlib.suppress(Exception):
                     await t
 
     def start(self):
-        print(self.url)
+
         asyncio.run(self.run_async())

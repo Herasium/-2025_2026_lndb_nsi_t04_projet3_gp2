@@ -13,7 +13,7 @@ class Game:
         self.status = 0
         self.players = {}
         self.players_per_roles = {}
-        self.min_player_count = 3
+        self.min_player_count = 1
         self.waiting_room = []
         self.playing_room = []
         self.death_room = []
@@ -21,7 +21,7 @@ class Game:
         # All required roles explicitly registered
         self.roles = [
             "villager", "werewolf", "black_wolf", "pyromane", "moon_fighter", 
-            "mark_garyson", "crazy_dave", "fortune_teller", "witch", "death_eater"
+            "mark_garyson", "fortune_teller", "witch", "death_eater"
         ]
         self.pending_responses = {}
         self.phase_name = "waiting"         
@@ -238,6 +238,7 @@ class Game:
             if responses[i] is not None:
                 vote_target = responses[i].get("vote")
                 if vote_target is not None:
+                    print(vote_target)
                     results[vote_target] = results.get(vote_target, 0) + 1
                     logger.debug(f"Tally process tracking -> Player {i} registered target vote choice against ID {vote_target}")
 
@@ -461,7 +462,7 @@ class Game:
         logger.success(f"------------------ Night {self.current_day} Starting ------------------")
         self.to_kill = []
         await self.send_all_players("switch_night", {"current_night": self.current_day})
-        
+        await asyncio.sleep(10)
         skip = await self.moon_fighter()
         if skip: logger.info("Night logic intercept phase verified. Halting step stack execution."); return
         await self.run_fortune_teller()
@@ -524,6 +525,8 @@ class Game:
         await asyncio.sleep(5)
 
     async def check_win(self):
+ 
+ 
         logger.info("Executing win-condition evaluation matrix scans against active live rooms layers.")
         werewolfs = self.get_players_by_role("werewolf", exclude_to_kill=False) + self.get_players_by_role("black_wolf", exclude_to_kill=False)
         logger.debug(f"Win check parsing -> Live matching antagonists pack size remaining: {len(werewolfs)}")

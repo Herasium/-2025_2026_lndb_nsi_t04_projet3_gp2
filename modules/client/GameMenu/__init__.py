@@ -154,7 +154,14 @@ class GameMenu(arcade.View):
                 button.sprite = texture.get("server_case_default")
                 #Server Connection
                 orc = Orchestrator(ip)
-                asyncio.run_coroutine_threadsafe(orc.run(),data.loop)         
+                future = asyncio.run_coroutine_threadsafe(orc.run(), data.loop)
+
+                def on_coroutine_exit(fut):
+                    def switch_view_main_thread(delta_time):
+                        data.client.display(GameMenu())
+                        arcade.unschedule(switch_view_main_thread)
+                    arcade.schedule(switch_view_main_thread, 1 / 60)
+                future.add_done_callback(on_coroutine_exit)
 
 
     def on_draw(self):

@@ -50,9 +50,15 @@ class Client:
         except queue.Empty:
             raw_msg = None
 
-        if network_process.is_alive():
+        dead.value = 1
+
+        try:
             network_process.terminate()
+            network_process.kill()
             network_process.join()
+            network_process.close()
+        except:
+            pass
         
         if raw_msg is None:
             return {"nom":name,"nombre":0,"max":-1,"status":0}
@@ -63,6 +69,16 @@ class Client:
         except json.JSONDecodeError:
             return {"nom":name,"nombre":0,"max":-1,"status":0}
 
+    def cut(self):
+        if not self.network_process is None:
+            self.dead_connection.value = 1
+            self.network_process.terminate()
+            self.network_process.kill()
+            self.network_process.join()
+            self.network_process.close()
+            self.network_process = None
+            self.run_connection = False
+
     def connect(self,ip):
         if self.run_connection:
             return 
@@ -70,7 +86,6 @@ class Client:
         self.rx_queue = multiprocessing.Queue()
         self.tx_queue = multiprocessing.Queue()
         self.dead_connection = multiprocessing.Value("i",0)
-        print("coonnect",ip)
         self.network_process = multiprocessing.Process(
                 target=run_connection_worker, 
                 args=(f"ws://{ip}:8765", self.rx_queue, self.tx_queue, self.dead_connection),
@@ -88,5 +103,4 @@ class Client:
 
 def run_connection_worker(ip,rx,tx,dead):
     conn_obj = Connection(ip,rx,tx,dead)
-    print(ip,"fopj")
     conn_obj.start()

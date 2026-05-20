@@ -3,6 +3,7 @@ import multiprocessing
 import json
 import pyglet
 import asyncio
+import queue
 
 from modules.data import data
 from modules.logger import Logger
@@ -36,6 +37,8 @@ class Orchestrator:
         self.tx = None
         self.loop = None
         
+        data.orch = self
+
         # State tracking parameters to optimize menu redrawing loops
         self.active_menu_name = None
         self.current_menu = None
@@ -58,18 +61,15 @@ class Orchestrator:
         """
         def process_ui_mutation(dt):
             if self.active_menu_name == menu_name and self.current_menu:
-                # Menu is active; update its inner state directly
                 self.current_menu.run(state, data_payload)
             else:
-                # Initialize new UI layer
                 instance = menu_class()
                 self.active_menu_name = menu_name
                 self.current_menu = instance
                 
-                # Render view frame
                 data.client.display(instance)
-                # Fire phase initial configuration parameters
-                instance.run(state, data_payload)
+                if menu_name != "MainMenu":
+                    instance.run(state, data_payload)
 
         pyglet.clock.schedule_once(process_ui_mutation, 0)
 
@@ -189,7 +189,7 @@ class Orchestrator:
     async def handle_night_pyromane_vote(self, payload):
         ui_data = {
             "villagers": payload["villagers"],
-            "callback": lambda target_code: self._safe_send("night_pyromane_response", {"vote": target_code})
+            "callback": lambda target_code: self._safe_send("night_pyromane_response", {"vote": target_code["id"]})
         }
         self._navigate_or_update("PyromaneMenu", PyromaneMenu, "vote", ui_data)
 
@@ -219,7 +219,16 @@ class Orchestrator:
     # --- Runtime Network Loop Operations ---
 
     async def read(self):
-        raw = await self.loop.run_in_executor(None, self.rx.get)
+
+        try:
+            raw: str = await self.loop.run_in_executor(
+                None, self.rx.get, True, 1.0
+            )
+
+        except queue.Empty:
+            raw = None
+            return
+
         parsed = json.loads(raw)
         logger.debug(f"Received Packet: {parsed}")
 
@@ -234,14 +243,21 @@ class Orchestrator:
         else:
             logger.warning(f"Unmapped incoming opcode detected: {opcode}")
 
+    def quit(self):
+        data.client.cut()
+        self.running = False
+
+
     async def run(self):
         self.loop = asyncio.get_running_loop()
         data.client.connect(self.ip)
+
+        self.running = True
 
         self.rx = data.client.rx_queue
         self.tx = data.client.tx_queue
 
         await self.send("player_join", {"name": data.nickname})
 
-        while True:
+        while self.running:
             await self.read()

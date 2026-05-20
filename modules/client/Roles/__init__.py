@@ -142,13 +142,13 @@ class WitchMenu(AbstractVotingMenu):
             
             y_pos = 500
             if not server_data.get("save", False) and server_data.get("id") is not None:
-                self.ui_buttons.append(Text(x=1920/2 - 250, y=y_pos, width=220, height=80, text="POTION DE VIE"))
+                self.ui_buttons.append(Text(x=1920/2 , y=y_pos+ 75, width=220, height=80, text="POTION DE VIE"))
                 self.action_codes.append(1)
             if not server_data.get("genocide", False):
                 self.ui_buttons.append(Text(x=1920/2, y=y_pos, width=220, height=80, text="POTION DE MORT"))
                 self.action_codes.append(2)
             
-            self.ui_buttons.append(Text(x=1920/2 + 250, y=y_pos, width=220, height=80, text="PASSER LE TOUR"))
+            self.ui_buttons.append(Text(x=1920/2 , y=y_pos- 75, width=220, height=80, text="PASSER LE TOUR"))
             self.action_codes.append(0)
         elif state == "genocide_start":
             self.title_text.text = "SÉLECTION DU POISON"
@@ -181,7 +181,6 @@ class WitchMenu(AbstractVotingMenu):
         if self.ui_buttons:
             BaseGameMenu.on_draw(self)
             for btn in self.ui_buttons:
-                c = (70, 30, 90) if getattr(btn, "touched", False) else (45, 15, 60)
                 btn.draw()
         else:
             super().on_draw()
@@ -220,7 +219,7 @@ class PyromaneMenu(AbstractVotingMenu):
     def on_mouse_press(self, x, y, buttons, modifier):
         super().on_mouse_press(x, y, buttons, modifier)
         if self.callback and self.btn_detonate and self.btn_detonate.touched:
-            self.callback(-1)
+            self.callback({"id":-1})
 
     def on_draw(self):
         super().on_draw()
@@ -292,6 +291,9 @@ class DeathEaterMenu(AbstractVotingMenu):
 class DayVote(AbstractVotingMenu):
     def __init__(self):
         super().__init__("DayVote")
+        self.houses_bg_day = Entity(0,0,1920,1080,texture.get("houses_background_day"))
+        self.sky_bg_day = Entity(0,0,1920,1080,texture.get("day_sky"))
+        self.sun_bg = Entity(0,0,1920,1080,texture.get("sun"))
 
     def run(self, state, payload):
         self.title_text.text = "TRIBUNAL DU VILLAGE"
@@ -299,3 +301,15 @@ class DayVote(AbstractVotingMenu):
         if payload:
             self.callback = payload.get("callback")
             self._build_grid(payload.get("villagers", []))
+
+    def on_draw(self):
+        super().on_draw()
+        self.sky_bg_day.draw()
+        self.houses_bg_day.draw()
+        self.sun_bg.draw()
+        self.title_text.draw()
+        self.subtitle_text.draw()
+
+        for btn in self.buttons:
+            btn.draw()
+    

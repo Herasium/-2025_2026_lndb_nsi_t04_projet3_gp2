@@ -21,11 +21,15 @@ class BaseGameMenu(arcade.View):
     def on_mouse_press(self, x: float, y: float, buttons: int, modifier: int):
         if self.button_quit.touched:
             self.button_quit.sprite = texture.get("quit_click")
+            try:
+                data.orch.quit()
+            except Exception as e:
+                print("failed to quit lol",e)
+                arcade.exit()
 
     def on_mouse_release(self, x: float, y: float, buttons: int, modifier: int):
         if self.button_quit.touched:
             self.button_quit.sprite = texture.get("quit_default")
-            arcade.exit()
 
     def on_draw(self):
         self.clear()
@@ -166,6 +170,10 @@ class DayDeath(BaseGameMenu):
     def __init__(self):
         super().__init__("DayDeath")
         self.deaths_text = Text(x=1920/2, y=500, width=800, height=400, text="")
+        self.houses_bg_day = Entity(0,0,1920,1080,texture.get("houses_background_day"))
+        self.sky_bg_day = Entity(0,0,1920,1080,texture.get("day_sky"))
+        self.sun_bg = Entity(0,0,1920,1080,texture.get("sun"))
+
 
     def run(self, state, payload):
         self.title_text.text = "RAPPORT DES MORTS"
@@ -180,17 +188,33 @@ class DayDeath(BaseGameMenu):
 
     def on_draw(self):
         super().on_draw()
+        self.sky_bg_day.draw()
+        self.houses_bg_day.draw()
+        self.sun_bg.draw()
+        self.title_text.draw()
+        self.subtitle_text.draw()
         self.deaths_text.draw()
 
 
 class GameEndMenu(BaseGameMenu):
     def __init__(self):
-        super().__init__("GameEndMenu")
+        super().__init__("GameEndMenu")        
+        self.houses_bg_day = Entity(0,0,1920,1080,texture.get("houses_background_day"))
+        self.sky_bg_day = Entity(0,0,1920,1080,texture.get("day_sky"))
+        self.sun_bg = Entity(0,0,1920,1080,texture.get("sun"))
 
     def run(self, state, payload):
         winner = payload.get("winner", "Personne").upper()
         self.title_text.text = "FIN DE LA PARTIE"
         self.subtitle_text.text = f"VICTOIRE DE LA FACTION : {winner} !"
+
+    def on_draw(self):
+        super().on_draw()
+        self.sky_bg_day.draw()
+        self.houses_bg_day.draw()
+        self.sun_bg.draw()
+        self.title_text.draw()
+        self.subtitle_text.draw()
 
 class AbstractVotingMenu(BaseGameMenu):
     """Moteur générique de rendu pour les choix ciblés sur des listes de joueurs."""
@@ -204,20 +228,18 @@ class AbstractVotingMenu(BaseGameMenu):
         self.choices = villagers
         self.buttons.clear()
         
-        w, h, gap_x, gap_y = 220, 80, 40, 30
-        max_cols = 5
+        w, h, gap_y = 220, 80, 20  
         total = len(villagers)
         if total == 0: return
         
-        cols = min(total, max_cols)
+        total_height = (total * h) + ((total - 1) * gap_y)
+
+        start_y = 550 + (total_height / 2) - (h / 2)
+        
+        x = 1920 / 2
+        
         for idx, item in enumerate(villagers):
-            c = idx % cols
-            r = idx // cols
-            current_row_count = cols if (r < total // cols) else (total % cols)
-            row_w = (current_row_count * w) + ((current_row_count - 1) * gap_x)
-            
-            x = (1920 / 2) - (row_w / 2) + (c * (w + gap_x)) + (w / 2)
-            y = 550 - (r * (h + gap_y))
+            y = start_y - (idx * (h + gap_y))
             
             btn = Text(x=x, y=y, width=w, height=h, text=f"{item['name']}")
             self.buttons.append(btn)
