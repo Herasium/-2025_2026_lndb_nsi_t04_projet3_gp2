@@ -21,11 +21,12 @@ class Server():
 
         player_id = client.id  
         client.name = message["name"]
-
-        self.game.players[player_id] = client
-        self.game.waiting_room.append(player_id)
-        await self.game.new_player(player_id)
-        logger.success(f"New player {client.name}")
+        
+        if not player_id in self.game.players:
+            self.game.players[player_id] = client
+            self.game.waiting_room.append(player_id)
+            await self.game.new_player(player_id)
+            logger.success(f"New player {client.name}")
 
     async def receive(self, websocket):
 
