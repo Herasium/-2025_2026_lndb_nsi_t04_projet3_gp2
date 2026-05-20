@@ -73,12 +73,42 @@ class RoleAttribution(BaseGameMenu):
 class NightMenu(BaseGameMenu):
     def __init__(self):
         super().__init__("NightMenu")
+        self.moon_rise_speed = 170
+        self.font_size = 18
+        self.text_y = 740 - 1000
+        self.max_font_size = 18
+        self.growth_speed = 0.55
+        self.button_quit = Entity(1820, 990, 64, 64,texture.get("quit_default"))
+        self.bg = Entity(0,0,1920,1080,texture.get("join_background"))
+        self.houses_bg = Entity(0,0,1920,1080,texture.get("houses_background"))
+        self.sky_bg = Entity(0,0,1920,1080,texture.get("night_sky"))
+        self.moon_bg = Entity(0,-1000,1920,1080,texture.get("big_moon"))
 
     def run(self, state, payload):
         num = payload.get("current_night", 1)
-        self.title_text.text = f"NUIT N°{num}"
-        self.subtitle_text.text = "Le village s'endort... Fermez les yeux."
+        self.title_text.text = f""
+        self.subtitle_text.text = f"NUIT N°{num} Le village s'endort... Fermez les yeux."
 
+    def on_draw(self):
+        self.clear()
+        # self.bg.draw()
+        self.sky_bg.draw()
+        self.moon_bg.draw()
+        self.subtitle_text.draw()
+        self.title_text.draw()
+        self.houses_bg.draw()
+
+        self.button_quit.draw()
+
+        
+    
+    def on_update(self, delta_time: float):
+        if self.moon_bg.y < 0:
+            self.moon_bg.y += self.moon_rise_speed * delta_time
+            self.moon_bg.y = min(self.moon_bg.y, 0)
+            self.text_y += self.moon_rise_speed * delta_time
+            self.text_y = min(self.text_y, 740)
+            self.subtitle_text.y = self.text_y
 
 class DayMenu(BaseGameMenu):
     def __init__(self):
