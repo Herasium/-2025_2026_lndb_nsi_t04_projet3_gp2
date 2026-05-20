@@ -20,20 +20,18 @@ class MoonFighterMenu(BaseGameMenu):
 
     def on_mouse_motion(self, x, y, dx, dy):
         super().on_mouse_motion(x, y, dx, dy)
-        self.btn_yes.touched = self.btn_yes.check_collision_with_point((x, y))
-        self.btn_no.touched = self.btn_no.check_collision_with_point((x, y))
+
 
     def on_mouse_press(self, x, y, buttons, modifier):
         super().on_mouse_press(x, y, buttons, modifier)
         if self.callback:
-            if self.btn_yes.check_collision_with_point((x, y)): self.callback(1)
-            elif self.btn_no.check_collision_with_point((x, y)): self.callback(0)
+            if self.btn_yes.touched: self.callback(1)
+            elif self.btn_no.touched: self.callback(0)
 
     def on_draw(self):
         super().on_draw()
         for btn, color in [(self.btn_yes, (0, 100, 0)), (self.btn_no, (100, 0, 0))]:
             c = (color[0]+30, color[1]+30, color[2]+30) if getattr(btn, "touched", False) else color
-            arcade.draw_rectangle_filled(btn.x, btn.y, btn.width, btn.height, c)
             btn.draw()
 
 
@@ -87,22 +85,19 @@ class BlackWolfMenu(AbstractVotingMenu):
 
     def on_mouse_motion(self, x, y, dx, dy):
         super().on_mouse_motion(x, y, dx, dy)
-        if self.btn_infect:
-            self.btn_infect.touched = self.btn_infect.check_collision_with_point((x, y))
-            self.btn_kill.touched = self.btn_kill.check_collision_with_point((x, y))
+
 
     def on_mouse_press(self, x, y, buttons, modifier):
         super().on_mouse_press(x, y, buttons, modifier)
         if self.callback:
-            if self.btn_infect and self.btn_infect.check_collision_with_point((x, y)): self.callback(self.choices[0])
-            elif self.btn_kill and self.btn_kill.check_collision_with_point((x, y)): self.callback(self.choices[1])
+            if self.btn_infect and self.btn_infect.touched: self.callback(self.choices[0])
+            elif self.btn_kill and self.btn_kill.touched: self.callback(self.choices[1])
 
     def on_draw(self):
         if self.btn_infect:
             BaseGameMenu.on_draw(self)
             for btn, col in [(self.btn_infect, (148, 0, 211)), (self.btn_kill, (50, 50, 50))]:
                 c = (col[0]+30, col[1]+30, col[2]+30) if getattr(btn, "touched", False) else col
-                arcade.draw_rectangle_filled(btn.x, btn.y, btn.width, btn.height, c)
                 btn.draw()
         else:
             super().on_draw()
@@ -169,15 +164,14 @@ class WitchMenu(AbstractVotingMenu):
 
     def on_mouse_motion(self, x, y, dx, dy):
         super().on_mouse_motion(x, y, dx, dy)
-        for btn in self.ui_buttons:
-            btn.touched = btn.check_collision_with_point((x, y))
+
 
     def on_mouse_press(self, x, y, buttons, modifier):
         if self.ui_buttons:
             super().on_mouse_press(x, y, buttons, modifier)
             if self.callback:
                 for idx, btn in enumerate(self.ui_buttons):
-                    if btn.check_collision_with_point((x, y)):
+                    if btn.touched:
                         self.callback(self.action_codes[idx])
                         break
         else:
@@ -188,7 +182,6 @@ class WitchMenu(AbstractVotingMenu):
             BaseGameMenu.on_draw(self)
             for btn in self.ui_buttons:
                 c = (70, 30, 90) if getattr(btn, "touched", False) else (45, 15, 60)
-                arcade.draw_rectangle_filled(btn.x, btn.y, btn.width, btn.height, c)
                 btn.draw()
         else:
             super().on_draw()
@@ -222,19 +215,17 @@ class PyromaneMenu(AbstractVotingMenu):
 
     def on_mouse_motion(self, x, y, dx, dy):
         super().on_mouse_motion(x, y, dx, dy)
-        if self.btn_detonate:
-            self.btn_detonate.touched = self.btn_detonate.check_collision_with_point((x, y))
+
 
     def on_mouse_press(self, x, y, buttons, modifier):
         super().on_mouse_press(x, y, buttons, modifier)
-        if self.callback and self.btn_detonate and self.btn_detonate.check_collision_with_point((x, y)):
+        if self.callback and self.btn_detonate and self.btn_detonate.touched:
             self.callback(-1)
 
     def on_draw(self):
         super().on_draw()
         if self.btn_detonate:
             c = (255, 69, 0) if getattr(self.btn_detonate, "touched", False) else (180, 40, 0)
-            arcade.draw_rectangle_filled(self.btn_detonate.x, self.btn_detonate.y, self.btn_detonate.width, self.btn_detonate.height, c)
             self.btn_detonate.draw()
 
 class WerewolfMenu(AbstractVotingMenu):
