@@ -214,7 +214,7 @@ class Game:
         logger.success(f"Final safe distribution complete. Summary: { {role: len(p) for role, p in per_roles.items()} }")
         return result, per_roles
 
-    def get_players_by_role(self, role, exclude_to_kill=True):
+    def get_players_by_role(self, role, exclude_to_kill=False):
         players = []
         tracked_candidates = self.players_per_roles.get(role, [])
         logger.debug(f"Scanning profile lists for type mapping matching role: '{role}' (Excluding scheduled executions: {exclude_to_kill})")
@@ -494,6 +494,10 @@ class Game:
             logger.info(f"Evaluating night cycle resolution data. Target list scheduled for destruction: {self.to_kill}")
             await self.kill_players(self.to_kill)
             self.to_kill = []
+
+        await self.check_win()
+        if self.finished:
+            return
 
         logger.debug("Entering standard daylight observation block pause (10s).")
         await asyncio.sleep(10)
